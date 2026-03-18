@@ -3,7 +3,7 @@
 ## Minimum technical requirement
 
 All teams must submit a **runnable Streamlit app**.
-Use the provided starter in `participants/starter-app/` as the baseline.
+Use the provided starter in `starter-app/` as the baseline.
 
 ## Provided starter structure
 
@@ -40,7 +40,7 @@ starter-app/
 ## Setup commands (copy/paste)
 
 ```bash
-cd participants/starter-app
+cd starter-app
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt
 .venv/Scripts/streamlit run app.py

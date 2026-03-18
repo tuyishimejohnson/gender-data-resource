@@ -13,9 +13,10 @@ This folder contains everything teams need to build and submit a hackathon solut
 
 ## Starter app quick run
 
-From `participants/starter-app/`:
+From repo root:
 
 ```bash
+cd starter-app
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt
 .venv/Scripts/streamlit run app.py
@@ -30,18 +31,12 @@ Validation summary is available in `starter-app/VALIDATION.md`.
 
 ## Core baseline files
 
-From `app/crawler-output-full/`:
-
-- `studies.csv`
-- `study_resources.csv`
-- `quality_report.csv`
-
-In the starter app package:
+In this repository:
 
 - sample data: `starter-app/data/sample/`
 - full dataset zip: `starter-app/data/full-data.zip`
 
-## Shared references
+## Reference docs
 
-- `../shared/data-dictionary.md`
-- `../shared/data-provenance-policy.md`
+- `data-dictionary.md`
+- `data-provenance-policy.md`

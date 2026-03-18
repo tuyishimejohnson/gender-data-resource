@@ -2,13 +2,14 @@
 
 ## Baseline data
 
-Use these files from `app/crawler-output-full/`:
+Use data that is bundled in this repository:
 
-- `studies.csv` (main index)
-- `study_resources.csv` (linked resources)
-- `quality_report.csv` (quality overlays)
+- `starter-app/data/sample/studies.csv` (main index)
+- `starter-app/data/sample/study_resources.csv` (linked resources)
+- `starter-app/data/sample/quality_report.csv` (quality overlays)
+- optional full dataset: `starter-app/data/full-data.zip`
 
-Read field definitions in `../shared/data-dictionary.md`.
+Read field definitions in `data-dictionary.md`.
 
 ## Recommended workflow
 
@@ -30,5 +31,6 @@ Use this for high-value resources in demo scenarios:
 ## Practical tips
 
 - If files feel large, start with a subset for iteration.
+- Start with sample data first, then switch to full-data zip when stable.
 - Keep null-safe logic for missing metadata fields.
 - Surface uncertainty in UI rather than hiding it.
