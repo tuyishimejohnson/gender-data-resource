@@ -15,7 +15,8 @@ quality["parsed_flags"] = quality["parsed_flags"].apply(lambda x: ", ".join(x))
 
 st.subheader("Quality overview")
 st.dataframe(
-    quality[["study_id", "title", "missing_field_count", "quality_level", "parsed_flags"]],
+    quality[
+        ["study_id", "title", "missing_field_count", "quality_level", "parsed_flags"]
+    ],
     use_container_width=True,
 )
-

@@ -2,5 +2,13 @@
 headless = true
 runOnSave = true
 
+[client]
+showSidebarNavigation = false
+
 [theme]
 base = "light"
+primaryColor = "#1e3a5f"
+backgroundColor = "#f5f7fa"
+secondaryBackgroundColor = "#eef2f7"
+textColor = "#1a1a2e"
+font = "sans serif"

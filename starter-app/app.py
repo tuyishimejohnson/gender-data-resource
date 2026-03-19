@@ -1,8 +1,10 @@
 import streamlit as st
 
-st.set_page_config(page_title="Gender Data Visibility Starter", layout="wide")
+st.set_page_config(
+    page_title="Gender Data Resource Discovery", page_icon=":bar-chart:", layout="wide"
+)
 
-st.title("Gender Data Visibility Starter App")
+st.title("Gender Data Resource Discovery")
 st.write(
     "This starter is a runnable baseline for hackathon teams. "
     "Use the sidebar pages for discovery, dashboard views, and data quality checks."
@@ -23,4 +25,3 @@ st.info(
     "Try searching for `labour`, filter by a recent year range, and review quality flags "
     "for missing metadata before presenting a policy-relevant insight."
 )
-

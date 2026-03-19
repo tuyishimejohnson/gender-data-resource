@@ -27,7 +27,9 @@ def _assert_columns(df: pd.DataFrame, required: set[str], name: str) -> None:
         raise ValueError(f"{name} missing required columns: {', '.join(missing)}")
 
 
-def load_all_data(data_dir: Path | None = None) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def load_all_data(
+    data_dir: Path | None = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     base = data_dir or get_data_dir()
     studies = pd.read_csv(base / "studies.csv")
     resources = pd.read_csv(base / "study_resources.csv")
@@ -37,4 +39,3 @@ def load_all_data(data_dir: Path | None = None) -> Tuple[pd.DataFrame, pd.DataFr
     _assert_columns(resources, REQUIRED_RESOURCE_COLS, "study_resources.csv")
     _assert_columns(quality, REQUIRED_QUALITY_COLS, "quality_report.csv")
     return studies, resources, quality
-
