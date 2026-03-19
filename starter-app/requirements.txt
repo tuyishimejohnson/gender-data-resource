@@ -2,3 +2,8 @@ streamlit
 pandas
 plotly
 requests
+pinecone
+openai
+pypdf
+python-dotenv
+fastapi
