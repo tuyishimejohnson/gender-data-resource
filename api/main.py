@@ -2,7 +2,7 @@
 FastAPI entry point.uvi
 
 Run:
-    corn api.main:app --reload
+    uvicorn api.main:app --reload
 
 Endpoints:
     POST /api           — send a message, get an AI response
