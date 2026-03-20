@@ -12,43 +12,9 @@ st.set_page_config(
 )
 
 
-def _go_to(page: str) -> None:
-    st.switch_page(page)
+from src.navigation import render_top_nav
 
-
-nav_brand_col, nav_links_col, nav_actions_col = st.columns([1.2, 1.7, 1.3])
-
-with nav_brand_col:
-    st.markdown(
-        """
-        <div style="display:flex;align-items:center;background-color:#f0f2f6;">
-            <div style="pading:30px;background:#6a5cff;color:white;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-                <div style="font-weight:700;color:#1d2742;font-size:18px;">EquiStat</div>
-                <div style="font-size:10px;letter-spacing:0.08em;">AI PLATFORM</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-with nav_links_col:
-    link1, link2, link3, link4 = st.columns(4)
-    link1.page_link("pages/2_Dashboard.py", label="Dashboard")
-    link2.page_link("pages/1_Discovery.py", label="Datasets")
-    link3.page_link("pages/3_Data_Quality.py", label="Methodology")
-    link4.page_link("pages/reports.py", label="Reports")
-
-with nav_actions_col:
-    live_col, export_col, user_col = st.columns([1.1, 1.2, 1.2])
-    live_col.markdown(
-        "<div style='margin-top:8px; font-size:12px; color:#0b8f5d;'>● Live Data</div>",
-        unsafe_allow_html=True,
-    )
-    export_col.button("Export", use_container_width=True)
-    user_col.markdown(
-        "<div style='margin-top:8px; font-size:12px; color:#4e5b79;'>Researcher</div>",
-        unsafe_allow_html=True,
-    )
+render_top_nav()
 
 st.divider()
 
@@ -62,7 +28,6 @@ st.markdown(
     <style>
     .block-container {
         width: 100%;
-        margin-top: 80px;
         max-width: 98% !important;
         padding-top: 1.2rem;
         padding-bottom: 1.8rem;
@@ -299,6 +264,29 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+variables_df = pd.read_csv("data/datasets/Variables_description_RW_LFS2023.csv")
+
+# remove all the NaN values in the dataframe
+variable_df = variables_df.dropna(subset="NaN")
+
+print("variables_df head:", variables_df.head())
+# filter gender
+
+
+total_variables = len(variables_df)
+numeric_variables = int(variables_df[variables_df["isnumeric"] == 1].shape[0])
+categorical_variables = total_variables - numeric_variables
+gender_related_variables = int(
+    variables_df["varlab"]
+    .fillna("")
+    .str.contains("sex|gender|female|male|woman|women|men", case=False, regex=True)
+    .sum()
+)
+print(gender_related_variables)
+
+print(variables_df.columns)
+
+
 filter_col_1, filter_col_2, filter_col_3, filter_col_4 = st.columns(
     [2.6, 1.2, 1.4, 1.2]
 )
@@ -331,47 +319,115 @@ st.markdown("")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 kpi1.markdown(
-    """
+    f"""
     <div class="kpi-card">
-      <div class="kpi-title">Avg Gender Gap</div>
-      <div class="kpi-value">5.1%</div>
-      <div class="kpi-sub">Current disparity in selected indicator</div>
+      <div class="kpi-title">Total Variables</div>
+      <div class="kpi-value">{total_variables}</div>
+      <div class="kpi-sub">Indicators available in RW LFS 2023</div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 kpi2.markdown(
-    """
+    f"""
     <div class="kpi-card">
-      <div class="kpi-title">Female Avg</div>
-      <div class="kpi-value">62.5%</div>
-      <div class="kpi-sub">Wage (Monthly Avg)</div>
+      <div class="kpi-title">Numeric Variables</div>
+      <div class="kpi-value">{numeric_variables}</div>
+      <div class="kpi-sub">Ready for direct statistical analysis</div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 kpi3.markdown(
-    """
+    f"""
     <div class="kpi-card">
-      <div class="kpi-title">Male Avg</div>
-      <div class="kpi-value">67.6%</div>
-      <div class="kpi-sub">Wage (Monthly Avg)</div>
+      <div class="kpi-title">Categorical Variables</div>
+      <div class="kpi-value">{categorical_variables}</div>
+      <div class="kpi-sub">Suitable for group comparisons & gaps</div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 kpi4.markdown(
-    """
+    f"""
     <div class="kpi-card">
-      <div class="kpi-title">Regions Tracked</div>
-      <div class="kpi-value">5</div>
-      <div class="kpi-sub">Indicators monitored</div>
+      <div class="kpi-title">Gender‑Related Variables</div>
+      <div class="kpi-value">{gender_related_variables}</div>
+      <div class="kpi-sub">Variables explicitly referencing sex or gender</div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
 st.markdown("")
+
+# ── Variables description dataset overview ───────────────────────────────────────
+
+meta_col1, meta_col2 = st.columns(2)
+
+type_counts = (
+    variables_df["type"]
+    .fillna("unknown")
+    .astype(str)
+    .value_counts()
+    .reset_index()
+    .rename(columns={"index": "type", "type": "count"})
+)
+
+section_counts = (
+    variables_df["name"]
+    .fillna("")
+    .astype(str)
+    .str[0]
+    .value_counts()
+    .reset_index()
+    .rename(columns={"index": "section", "name": "count"})
+    .sort_values("section")
+)
+
+with meta_col1:
+    st.markdown(
+        "<div class='section-card'><div class='panel-title'>Variables by storage type</div><div class='panel-subtitle'>How many indicators are int, byte, float, etc.</div>",
+        unsafe_allow_html=True,
+    )
+    type_fig = px.bar(type_counts, x="type", y="count", text="count", color="type")
+    type_fig.update_layout(
+        margin=dict(l=10, r=10, t=8, b=8),
+        height=260,
+        showlegend=False,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        xaxis_title="",
+        yaxis_title="Variables",
+    )
+    type_fig.update_traces(textposition="outside")
+    st.plotly_chart(type_fig, use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with meta_col2:
+    st.markdown(
+        "<div class='section-card'><div class='panel-title'>Variables by questionnaire section</div><div class='panel-subtitle'>First letter of variable name (A = demographics, B = education, ...)</div>",
+        unsafe_allow_html=True,
+    )
+    section_fig = px.bar(
+        section_counts,
+        x="section",
+        y="count",
+        text="count",
+        color="section",
+    )
+    section_fig.update_layout(
+        margin=dict(l=10, r=10, t=8, b=8),
+        height=260,
+        showlegend=False,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        xaxis_title="Section code",
+        yaxis_title="Variables",
+    )
+    section_fig.update_traces(textposition="outside")
+    st.plotly_chart(section_fig, use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 left_chart_col, insight_col = st.columns([2.25, 1.0])
 
@@ -398,6 +454,25 @@ with left_chart_col:
         "<div class='section-card'><div class='panel-title'>Gender Gap Trend & Forecast</div><div class='panel-subtitle'>2018-2023 historical · 2024-2026 ML forecast</div>",
         unsafe_allow_html=True,
     )
+
+    df = pd.DataFrame(
+        {
+            "year": [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
+            "gap": [10.8, 9.3, 13.4, 9.8, 6.7, 5.2, 4.1, 3.0, 2.1],
+            "segment": [
+                "Historical",
+                "Historical",
+                "Historical",
+                "Historical",
+                "Historical",
+                "Historical",
+                "Forecast",
+                "Forecast",
+                "Forecast",
+            ],
+        }
+    )
+
     trend_fig = px.line(
         trend_df,
         x="year",
@@ -487,7 +562,7 @@ with ask_col:
                         <div style="font-size:12px;color:#7b88a5;">Powered by EquiStat AI</div>
                     </div>
                 </div>
-                <div style="font-size:12px;color:#00a46d;font-weight:600;">● Online</div>
+                <div style="font-size:12px;color:#00a46d;font-weight:600;">Online</div>
             </div>
             <div class="ai-chat-body">
                 <div class="ai-chat-msg">
