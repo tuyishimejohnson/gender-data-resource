@@ -8,6 +8,7 @@ load_dotenv(Path(__file__).parents[1] / "starter-app" / ".env")
 
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 PINECONE_KEY: str = os.getenv("PINECONE_KEY", "")
+TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
 
 PINECONE_INDEX = "giz"
 CHAT_MODEL = "gpt-4o-mini"

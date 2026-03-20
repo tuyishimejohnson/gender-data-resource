@@ -1,8 +1,8 @@
 """
-FastAPI entry point.
+FastAPI entry point.uvi
 
 Run:
-    uvicorn api.main:app --reload
+    corn api.main:app --reload
 
 Endpoints:
     POST /chat          — send a message, get an AI response

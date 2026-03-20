@@ -5,4 +5,5 @@ pandas
 pyarrow
 pinecone
 openai
+tavily-python
 python-dotenv
