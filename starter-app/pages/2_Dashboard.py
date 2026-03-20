@@ -4,7 +4,12 @@ import streamlit as st
 
 from src.loaders import get_data_dir
 
-st.set_page_config(page_title="Gender Intelligence Dashboard", page_icon=":bar_chart:", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(
+    page_title="Gender Intelligence Dashboard",
+    page_icon=":bar_chart:",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 
 def _go_to(page: str) -> None:
@@ -17,10 +22,9 @@ with nav_brand_col:
     st.markdown(
         """
         <div style="display:flex;align-items:center;background-color:#f0f2f6;">
-            <div style="width:30px;height:30px;border-radius:50%;background:#6a5cff;color:white;display:flex;align-items:center;justify-content:center;font-size:14px;">W</div>
-            <div>
-                <div style="font-weight:700;color:#1d2742;font-size:18px;line-height:1.05;">EquiStat</div>
-                <div style="font-size:10px;color:#71809f;letter-spacing:0.08em;">AI PLATFORM</div>
+            <div style="pading:30px;background:#6a5cff;color:white;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                <div style="font-weight:700;color:#1d2742;font-size:18px;">EquiStat</div>
+                <div style="font-size:10px;letter-spacing:0.08em;">AI PLATFORM</div>
             </div>
         </div>
         """,
@@ -32,7 +36,7 @@ with nav_links_col:
     link1.page_link("pages/2_Dashboard.py", label="Dashboard")
     link2.page_link("pages/1_Discovery.py", label="Datasets")
     link3.page_link("pages/3_Data_Quality.py", label="Methodology")
-    link4.page_link("pages/2_Dashboard.py", label="Reports")
+    link4.page_link("pages/reports.py", label="Reports")
 
 with nav_actions_col:
     live_col, export_col, user_col = st.columns([1.1, 1.2, 1.2])
@@ -49,7 +53,9 @@ with nav_actions_col:
 st.divider()
 
 st.title("Gender Intelligence Dashboard")
-st.caption(f"Rwanda · Real-time gender equity analytics powered by AI · Data source: `{get_data_dir()}`")
+st.caption(
+    f"Rwanda · Real-time gender equity analytics powered by AI · Data source: `{get_data_dir()}`"
+)
 
 st.markdown(
     """
@@ -293,7 +299,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-filter_col_1, filter_col_2, filter_col_3, filter_col_4 = st.columns([2.6, 1.2, 1.4, 1.2])
+filter_col_1, filter_col_2, filter_col_3, filter_col_4 = st.columns(
+    [2.6, 1.2, 1.4, 1.2]
+)
 
 with filter_col_1:
     indicator = st.selectbox(
@@ -309,9 +317,15 @@ with filter_col_1:
 with filter_col_2:
     year = st.selectbox("Year", [2023, 2022, 2021, 2020, 2019, 2018], index=0)
 with filter_col_3:
-    region = st.selectbox("Region", ["All Regions", "Western", "Southern", "Northern", "Kigali City", "Eastern"])
+    region = st.selectbox(
+        "Region",
+        ["All Regions", "Western", "Southern", "Northern", "Kigali City", "Eastern"],
+    )
 with filter_col_4:
-    st.markdown("<div style='padding-top:30px;color:#7a839f;font-size:12px;'>5 data points loaded</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div style='padding-top:30px;color:#7a839f;font-size:12px;'>5 data points loaded</div>",
+        unsafe_allow_html=True,
+    )
 
 st.markdown("")
 
@@ -365,13 +379,33 @@ trend_df = pd.DataFrame(
     {
         "year": [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
         "gap": [10.8, 9.3, 13.4, 9.8, 6.7, 5.2, 4.1, 3.0, 2.1],
-        "segment": ["Historical", "Historical", "Historical", "Historical", "Historical", "Historical", "Forecast", "Forecast", "Forecast"],
+        "segment": [
+            "Historical",
+            "Historical",
+            "Historical",
+            "Historical",
+            "Historical",
+            "Historical",
+            "Forecast",
+            "Forecast",
+            "Forecast",
+        ],
     }
 )
 
 with left_chart_col:
-    st.markdown("<div class='section-card'><div class='panel-title'>Gender Gap Trend & Forecast</div><div class='panel-subtitle'>2018-2023 historical · 2024-2026 ML forecast</div>", unsafe_allow_html=True)
-    trend_fig = px.line(trend_df, x="year", y="gap", markers=True, color="segment", color_discrete_map={"Historical": "#5B6CFA", "Forecast": "#9AA6FF"})
+    st.markdown(
+        "<div class='section-card'><div class='panel-title'>Gender Gap Trend & Forecast</div><div class='panel-subtitle'>2018-2023 historical · 2024-2026 ML forecast</div>",
+        unsafe_allow_html=True,
+    )
+    trend_fig = px.line(
+        trend_df,
+        x="year",
+        y="gap",
+        markers=True,
+        color="segment",
+        color_discrete_map={"Historical": "#5B6CFA", "Forecast": "#9AA6FF"},
+    )
     trend_fig.update_layout(
         margin=dict(l=10, r=10, t=8, b=8),
         height=315,
@@ -416,8 +450,18 @@ series_df = pd.DataFrame(
 series_long = series_df.melt(id_vars="year", var_name="group", value_name="value")
 
 with line_col:
-    st.markdown("<div class='section-card'><div class='panel-title'>Male vs Female Over Time</div><div class='panel-subtitle'>Average values across all regions for selected indicator</div>", unsafe_allow_html=True)
-    line_fig = px.line(series_long, x="year", y="value", color="group", markers=True, color_discrete_map={"Female": "#F46A9B", "Male": "#32B3E5"})
+    st.markdown(
+        "<div class='section-card'><div class='panel-title'>Male vs Female Over Time</div><div class='panel-subtitle'>Average values across all regions for selected indicator</div>",
+        unsafe_allow_html=True,
+    )
+    line_fig = px.line(
+        series_long,
+        x="year",
+        y="value",
+        color="group",
+        markers=True,
+        color_discrete_map={"Female": "#F46A9B", "Male": "#32B3E5"},
+    )
     line_fig.update_layout(
         margin=dict(l=10, r=10, t=8, b=8),
         height=290,
@@ -457,14 +501,18 @@ with ask_col:
                 <span class="chip">Give me a summary</span>
                 <span class="chip">Predict</span>
             </div>
-            <div class="ai-input-row">
-                <div class="ai-input">Ask about trends, gaps, forecasts...</div>
-                <div class="ai-send">➤</div>
-            </div>
+          
         </div>
         """,
         unsafe_allow_html=True,
     )
+    title = st.text_input(
+        "Ask about trends, gaps, forecasts...",
+        placeholder="Ask about trends, gaps, forecasts...",
+    )
+    st.write(title)
+
+    st.button("Send", use_container_width=True)
 
 st.markdown("")
 
@@ -474,7 +522,20 @@ rank_df = pd.DataFrame(
         "gap": [11.6, 10.3, 3.2, 2.4, 0.5],
     }
 )
-rank_fig = px.bar(rank_df, x="gap", y="region", orientation="h", color="region", color_discrete_map={"Western": "#5B6CFA", "Eastern": "#25C997", "Southern": "#E3E8F2", "Northern": "#E3E8F2", "Kigali City": "#E3E8F2"})
+rank_fig = px.bar(
+    rank_df,
+    x="gap",
+    y="region",
+    orientation="h",
+    color="region",
+    color_discrete_map={
+        "Western": "#5B6CFA",
+        "Eastern": "#25C997",
+        "Southern": "#E3E8F2",
+        "Northern": "#E3E8F2",
+        "Kigali City": "#E3E8F2",
+    },
+)
 rank_fig.update_layout(
     margin=dict(l=8, r=8, t=8, b=8),
     height=300,
@@ -487,7 +548,10 @@ rank_fig.update_layout(
 rank_fig.update_traces(marker_line_width=0)
 rank_fig.update_yaxes(categoryorder="total ascending")
 
-st.markdown("<div class='section-card'><div class='panel-title'>Regional Disparity Ranking</div><div class='panel-subtitle'>Gender gap by province · 2023</div>", unsafe_allow_html=True)
+st.markdown(
+    "<div class='section-card'><div class='panel-title'>Regional Disparity Ranking</div><div class='panel-subtitle'>Gender gap by province · 2023</div>",
+    unsafe_allow_html=True,
+)
 st.plotly_chart(rank_fig, use_container_width=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -506,9 +570,17 @@ table_df = pd.DataFrame(
         "FEMALE": ["52.7%", "59.9%", "61.9%", "62.5%", "52.6%", "57.3%"],
         "MALE": ["57.5%", "64.8%", "70.2%", "67.6%", "62.9%", "64.0%"],
         "GAP": ["4.8%", "4.9%", "8.4%", "5.1%", "10.3%", "6.6%"],
-        "STATUS": ["On Track", "On Track", "Needs Attention", "On Track", "Needs Attention", "On Track"],
+        "STATUS": [
+            "On Track",
+            "On Track",
+            "Needs Attention",
+            "On Track",
+            "Needs Attention",
+            "On Track",
+        ],
     }
 )
+
 
 def _status_label(value: str) -> str:
     if value == "On Track":
@@ -518,7 +590,10 @@ def _status_label(value: str) -> str:
 
 table_df["STATUS"] = table_df["STATUS"].apply(_status_label)
 
-st.markdown("<div class='section-card'><div class='panel-title'>All Indicators Overview</div><div class='panel-subtitle'>Comparative gender gaps across all tracked indicators · 2023</div>", unsafe_allow_html=True)
+st.markdown(
+    "<div class='section-card'><div class='panel-title'>All Indicators Overview</div><div class='panel-subtitle'>Comparative gender gaps across all tracked indicators · 2023</div>",
+    unsafe_allow_html=True,
+)
 st.dataframe(table_df, use_container_width=True, hide_index=True)
 st.markdown("</div>", unsafe_allow_html=True)
 

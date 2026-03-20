@@ -3,7 +3,18 @@ import streamlit as st
 from src.filters import apply_study_filters, filter_resources_by_type
 from src.loaders import get_data_dir, load_all_data
 
-st.title("Discovery")
+st.set_page_config(
+    page_title="Datasets",
+    page_icon=":bar_chart:",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+from src.navigation import render_top_nav
+
+render_top_nav()
+
+st.title("Datasets")
 st.caption(f"Data source: `{get_data_dir()}`")
 
 studies, resources, quality = load_all_data()
