@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+duckdb
+pandas
+pyarrow
+pinecone
+openai
+python-dotenv

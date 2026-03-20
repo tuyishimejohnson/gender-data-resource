@@ -1,0 +1,240 @@
+position,name,type,isnumeric,format,vallab,varlab
+1,PSU_NO,int,1,%10.0g,,Primary Sampling Unit-quarterly
+2,QH_NO,byte,1,%8.0g,,QUESTIONNAIRE  NUMBER
+3,HHID,long,1,%12.0g,,Household identification
+4,pid,long,1,%15.0f,,Personal id
+5,province,byte,1,%17.0g,province,Province
+6,Code_UR,byte,1,%9.0g,Code_UR,urban-rural
+7,code_dis,byte,1,%10.0g,code_dis,District
+8,LFS_year,int,1,%9.0g,,LFS data collection year
+9,weight2,float,1,%9.0g,,Annual_weight
+10,A01,byte,1,%10.0g,A01,Sex
+11,A02,byte,1,%10.0g,A02,Relationship
+12,A03M,byte,1,%10.0g,A03M,Date of birth Month
+13,A03Y,int,1,%10.0g,A03Y,date of birth year
+14,A04,byte,1,%10.0g,A04,Age at last birthday
+15,A05,byte,1,%10.0g,A05,Present marital status
+16,A06,byte,1,%10.0g,A06,"Do you have difficulty seeing, even if wearing glasses?"
+17,A07,byte,1,%10.0g,A07,"Do you have difficulty hearing, even if using a hearing aid?"
+18,A08,byte,1,%10.0g,A08,Do you have difficulty walking or climbing steps?
+19,A09,byte,1,%10.0g,A09,Do you have difficulty remembering or concentrating?
+20,A10,byte,1,%10.0g,A10,Do you have difficulty (with self-care such as) washing all over or dressing?
+21,A11,byte,1,%10.0g,A11,"Using your usual language, do you have difficulty communicating, mple understand"
+22,A12,byte,1,%10.0g,A12,What is nationality?
+23,A13,byte,1,%10.0g,A13,Residential Status in Rwanda
+24,A14A,byte,1,%10.0g,A14A,Country/Area of birth
+25,A14B,byte,1,%10.0g,A14B,District of birth
+26,A15,byte,1,%10.0g,A15,Has usual place of residence  always been in this district?
+27,A16Y,byte,1,%10.0g,,The period of usual place of residence( last move)-Years
+28,A17A,byte,1,%10.0g,A17A,District or foreign country did he/she live.
+29,A17B,byte,1,%10.0g,A17B,District code
+30,A18,byte,1,%10.0g,A18,Kind of place he/she lived in prior to arriving here?
+31,A19,byte,1,%10.0g,,How long did he/she live in the previous location prior to arriving here?
+32,A20,byte,1,%10.0g,A20,Reason to move away from previous location
+33,A21,byte,1,%10.0g,A21,Has he/she been away from home in this last 12 months?
+34,A22,byte,1,%10.0g,,Months during the past 12 months has he/she been away from this HH
+35,A23,byte,1,%10.0g,A23,"While absent, is/was he/she a member of another household?"
+36,A24,byte,1,%10.0g,A24,Is he/she household member?
+37,B01,byte,1,%10.0g,B01,IS [NAME] currently studying?
+38,B02A,byte,1,%10.0g,B02A,What is the Highest educational level is/ have [NAME] attending / attended?
+39,B02B,int,1,%10.0g,,How many years have you completed in that level of education?
+40,B03,byte,1,%10.0g,B03,Highest certificate obtained
+41,B06,byte,1,%10.0g,B06,Ability to read and write
+42,B07,byte,1,%10.0g,B07,Currently attending any trade or technical Skills school
+43,B08,byte,1,%10.0g,B08,Did you learn any Trade or Technical vocational course (TVET)?
+44,B09,byte,1,%10.0g,B09,How long will/did this Training take?
+45,B10,byte,1,%41.0g,B10,Type of technical skills learned?
+46,B13,byte,1,%10.0g,B13,Did [NAME] complete the course?
+47,B13A,int,1,%10.0g,B13A,In which year did (Name) complete this course?
+48,B14,byte,1,%10.0g,B14,What happened after you completed the course?
+49,B18,byte,1,%10.0g,B18,"Has [Name] in last three months used any social media (facebook, whatsapp, tweet"
+50,B19,byte,1,%10.0g,B19,Has [Name] in the last three months used intenet? (for individual use not for of
+51,C01,byte,1,%10.0g,C01,"During the last 7 days,did he/she do any work for wage, salary, commission, tips"
+52,C02,byte,1,%10.0g,C02,"During the past 7 days, did (NAME) run or do any kind of business, farming or ot"
+53,C03,byte,1,%10.0g,C03,"During the past 7 days, did (NAME) help unpaid in a business owned by a househol"
+54,C04,byte,1,%10.0g,C04,"Was this work in agriculture, farming or fishing?"
+55,C05,byte,1,%10.0g,C05,"In general, are the products obtained from this activity for sale or for family"
+56,C06,byte,1,%10.0g,C06,"During the last 7 days, did (NAME) have a paid job or a business from which he/s"
+57,C07,byte,1,%10.0g,C07,What was the main reason (NAME) was absent from work during the last 7 days?
+58,C08,byte,1,%10.0g,C08,What is the expected total absence from work for (NAME)?
+59,C09,byte,1,%10.0g,C09,Does (NAME) continue receiving an income from his/her job during absence?
+60,C09A,byte,1,%34.0g,C09A,"Among the following categories, which correspond to the (NAME)'s situation"
+61,C10,byte,1,%10.0g,C10,Did [NAME] have any other paid job or business or performed any secondary activi
+62,C11A,double,1,%10.0g,,How many hours does [NAME] usually work per week?Main job/activity
+63,C11B,byte,1,%10.0g,,How many hours does [NAME] usually work per week?Secondary job/activity
+64,C12A,byte,1,%10.0g,,"During the past 7 days, how many days did (NAME) actually work?Main job/activity"
+65,C12B,byte,1,%10.0g,,"During the past 7 days, how many days did (NAME) actually work?Secondary job/act"
+66,C13A,int,1,%10.0g,,"During the past 7 days, how many hours per day did (NAME) actually worked?Main j"
+67,C13B,byte,1,%10.0g,,"During the past 7 days, how many hours per day did (NAME) actually worked?second"
+68,C14,byte,1,%10.0g,C14,How many hours did [NAME) usually worked at all jobs combined during the last 7
+69,C15,byte,1,%10.0g,C15,What was the main reason (NAME) usually worked long hours per week?
+70,C16,byte,1,%10.0g,C16,"During the last 4 weeks, did (NAME) look for additional or other work?"
+71,C17,byte,1,%10.0g,C17,Would want to work more hours per week than usualy worked provided the extra hou
+72,C18,byte,1,%10.0g,C18,"If an opportunity for additional work became available, could (NAME) start worki"
+73,C19,byte,1,%10.0g,C19,"During the last 4 weeks, did [NAME] look for any kind of paid job or try to star"
+74,C20,byte,1,%10.0g,C20,Has [NAME] already found a job or arranged to start a business in the next 4 wee
+75,C22,byte,1,%10.0g,C22,For how long has [NAME] been without work and trying to find a paid job or start
+76,C23,byte,1,%10.0g,C23,Would [NAME] want to work if a  paid job or business opportunity became availabl
+77,C24,byte,1,%10.0g,C24,What was the main reason (NAME) did not try to find a paid job or start a busine
+78,C25,byte,1,%10.0g,C25,"If a paid job or business opportunity become available, could [NAME] have starte"
+79,C26,byte,1,%10.0g,C26,What is the mean reason why (NAME) could not  start working in the last 7 days o
+80,C21,str4,0,%9s,,what did [NAME] do  in the last 4 weeks to find a paid job or start a business?
+81,C21_A,byte,1,%8.0g,,"Arranging for financial ressources,applying for permits,licences"
+82,C21_B,byte,1,%8.0g,,"Looking for land,premises,machinery,supplies,farming inputs"
+83,C21_C,byte,1,%8.0g,,"Seeking the assistance of friends,relatives or other types of intermediaries"
+84,C21_D,byte,1,%8.0g,,Registering with or contacting public or private employment services
+85,C21_E,byte,1,%8.0g,,"Applying to employers directly,checking at worksites,farms,factory gates,markets"
+86,C21_F,byte,1,%8.0g,,Placing or answering newspaper or online job advertisements
+87,C21_G,byte,1,%8.0g,,Placing and updating resumes on professional or social networking sites online
+88,C21_H,byte,1,%8.0g,,No method
+89,C21_L,byte,1,%8.0g,,"Other, specify"
+90,D03A,byte,1,%10.0g,D03A,What is the name of (NAME)?s workplace?
+91,D04,byte,1,%10.0g,D04,Does (Name) work in....
+92,D05,byte,1,%10.0g,D05,"In this job, is  [NAME] working as??"
+93,D06,byte,1,%10.0g,D06,Have [NAME] been employed on the basis of:
+94,D07,byte,1,%10.0g,D07,Is [NAME]'s contract or agreement :
+95,D08,byte,1,%10.0g,D08,The duration of the contract or agreement?
+96,D09A,byte,1,%10.0g,D09A,Does employer pay contributions on [NAME]?s behalf to social security fund
+97,D09B,byte,1,%10.0g,D09B,Does employer pay contributions on [NAME]?s behalf to health insurance fund
+98,D10A,byte,1,%10.0g,D10A,Benefits paid for annual leave
+99,D10B,byte,1,%10.0g,D10B,Benefits  paid for sick leave
+100,D10C,byte,1,%10.0g,D10C,Benefits  paid for maternity/paternity leave
+101,D10D,byte,1,%10.0g,D10D,Is (Name)'s salary subjected to deduction of taxe (PAYE)
+102,D11,byte,1,%10.0g,D11,Does [NAME] belong to any trade union or syndicate
+103,D12,byte,1,%10.0g,D12,"How much did he/she  earn at main job last time in cash and in kind, before taxe"
+104,D12A,long,1,%10.0g,,Amount in Rwandan francs
+105,D13,byte,1,%10.0g,D13,How long did it cover?
+106,D14,byte,1,%10.0g,D14,"Does [NAME] receive in-kind payments in main job such as food, agricultural prod"
+107,D15,byte,1,%10.0g,D15,What is the value of these in-kind payments?
+108,D15A,long,1,%10.0g,,Amount in Rwandan francs
+109,D16,byte,1,%10.0g,D16,What period did it cover?
+110,D17,byte,1,%10.0g,D17,"Taking into account both cash and in kind payments,Would you say the monthly amo"
+111,D20,byte,1,%10.0g,D20,Is the business/establishment where [NAME] works registered with the RRA or  pay
+112,D21,byte,1,%10.0g,D21,"In order to report to an authority, does the business/establishment where (NAME)"
+113,D23,byte,1,%10.0g,D23,In what type of place does [NAME] usually work?
+114,D27,byte,1,%10.0g,D27,Is a secondary paid job or business/activity reported
+115,D24A,byte,1,%8.0g,,How long have [NAME] been working (total experience)-Years?
+116,E11,byte,1,%10.0g,,Apart from the main job:how many Job did(Name) had in the last 7 days?
+117,E12,byte,1,%10.0g,E12,How much did (Name) earn from other jobs or activities had last week in cash?
+118,E12B,long,1,%10.0g,,Amount in Rwandan francs
+119,E13,byte,1,%10.0g,E13,How long did it cover?
+120,F01,byte,1,%10.0g,F01,"Has [NAME]ever worked previously for a wage, salary or for other income in cash"
+121,F02,byte,1,%10.0g,F02,The main reason to stop working in his/her last paid job / business?
+122,F05,byte,1,%10.0g,F05,What is (Name) main source of income at present?
+123,G01,byte,1,%10.0g,,"In the last 7 days, how many  hours did [NAME] spend collecting firewood for the"
+124,G02,byte,1,%10.0g,,"In the last 7 days, how many hours did [NAME] spend fetching water for the house"
+125,G03,byte,1,%10.0g,,"In the last 7 days, how many hours did [NAME] spend searching for  fodder or gra"
+126,G04,byte,1,%10.0g,,"In the last 7 days, how many hours did [NAME] spend manufacturing household good"
+127,G05,byte,1,%10.0g,,"In the last 7 days, how many hours did [NAME] spend constructing your dwelling,"
+128,G06,byte,1,%10.0g,,"In the last 7 days, how many hours did [NAME] spend doing household chores inclu"
+129,G07,byte,1,%10.0g,,"In the last 7 days, how many hours did [NAME] spend looking after children and e"
+130,G01A,byte,1,%8.0g,G01A,"In the last 7 days,  did [NAME] spend time collecting firewood for the household"
+131,G02A,byte,1,%8.0g,G02A,"In the last 7 days, Did [Name] spent time on fetching water for the household?"
+132,G03A,byte,1,%8.0g,G03A,"In the last 7 days, Did [Name] spent time on grazing or feeding hiusehold animal"
+133,G04A,byte,1,%8.0g,G04A,"In the last 7 days, Did [Name] spent time on manufacturing of goods for family u"
+134,G05A,byte,1,%8.0g,G05A,"In the last 7 days, Did [Name] spent time on construction of own building?"
+135,G06A,byte,1,%8.0g,G06A,"In the last 7 days, Did [Name] spent time on doing household chores?"
+136,G07A,byte,1,%8.0g,G07A,"In the last 7 days, Did [Name] tooktime to look under children or adults"
+137,H01,byte,1,%10.0g,H01,During the last four weeks did he/she do any of the following  work mainly for o
+138,H02,byte,1,%10.0g,,How many days per week did [NAME] usually worked in these activities?
+139,H03,byte,1,%10.0g,,How many hours per day has [NAME] usually worked in these activities?
+140,H05,byte,1,%10.0g,H05,"In general, did the household sell or barter any part of the goods obtained from"
+141,H06,byte,1,%10.0g,H06,About how much does the household regularly sell?
+142,H09,byte,1,%10.0g,H09,Do you regularly or sometimes engage paid employee in the farming activity?
+143,H00,byte,1,%64.0g,H00,How would you describe your main situation on labour market at present?
+144,H04,byte,1,%9.0g,,
+145,H10,byte,1,%10.0g,H10,"Excluding family members, how many paid employees do you usually  engage in thes"
+146,I01_A,byte,1,%10.0g,I01_A,Main material used in building this house for roof
+147,I01_B,byte,1,%10.0g,I01_B,Main material used in building this house for exterior walls
+148,I01_C,byte,1,%10.0g,I01_C,Main material used in building this house for floor
+149,I02,byte,1,%10.0g,,How many rooms in your household are used for sleeping?
+150,I03,byte,1,%10.0g,I03,What type of toilet does your household have?
+151,I04,byte,1,%10.0g,I04,What is the main source of energy in your household for lighting?
+152,I05,byte,1,%10.0g,I05,What is the main source of energy in your household for cooking?
+153,I06A,byte,1,%10.0g,I06A,What is the main source of water in your household for drinking?
+154,I06B,byte,1,%10.0g,I06B,What is the main source of water in your household for other uses?
+155,I07A,byte,1,%10.0g,I07A,Does this household own Refrigerator/Freezer?
+156,I07B,byte,1,%10.0g,I07B,Does this household own radio?
+157,I07C,byte,1,%10.0g,I07C,Does this household own TV set?
+158,I07D,byte,1,%10.0g,I07D,Does this household own parabolic antena?
+159,I07E,byte,1,%10.0g,I07E,Does this household own Video/DVD player?
+160,I07F,byte,1,%10.0g,I07F,Does this household own Computer and accessories?
+161,I07G,byte,1,%10.0g,I07G,Does this household own Music system?
+162,I07H,byte,1,%10.0g,I07H,Does this household own Cooker?
+163,I07I,byte,1,%10.0g,I07I,Does this household own Sewing machine?
+164,I07J,byte,1,%10.0g,I07J,Does this household own Laundry machine?
+165,I07K,byte,1,%10.0g,I07K,Does this household own Electric fan?
+166,I07L,byte,1,%10.0g,I07L,Does this household own Camera?
+167,I07M,byte,1,%10.0g,I07M,Does this household own Mobile phone?
+168,I07N,byte,1,%10.0g,I07N,Does this household own Car ?
+169,I07O,byte,1,%10.0g,I07O,Does this household own Bicycle  ?
+170,I07P,byte,1,%10.0g,I07P,Does this household own Motorcycle  ?
+171,I07Q,byte,1,%10.0g,I07Q,Does this household own internet connection ?
+172,status1,byte,1,%19.0g,status,Labour force status with 16+
+173,wap16,byte,1,%9.0g,,Working age population
+174,employed16,byte,1,%9.0g,,Employment to population ratio
+175,UR1,byte,1,%9.0g,,Unemployment rate
+176,LFPR,byte,1,%9.0g,,Labour force particiaption rate
+177,sub,byte,1,%15.0g,sub, Dimunished Subsistance foodstaff producers
+178,TRU,byte,1,%30.0g,TRU,Time related underemployment
+179,PLF,byte,1,%24.0g,PLF,Potential labour force
+180,youth,byte,1,%9.0g,,Youth 16 to 24 years old
+181,young,byte,1,%9.0g,,Young 16 to 30 years old
+182,LUU,byte,1,%26.0g,LUU,Labour underutilisation
+183,LUUR,byte,1,%9.0g,,Labour underutilization rate
+184,disable,byte,1,%8.0g,,person with disability
+185,discourage,byte,1,%9.0g,,Discouraged jobseekers
+186,willing,byte,1,%9.0g,,Willing non seeker and not available
+187,migrant,byte,1,%21.0g,mig,Recent migration
+188,neetyouth,byte,1,%9.0g,,NEET 16-24
+189,neetyoung,byte,1,%9.0g,,NEET 16-30
+190,youngs,byte,1,%50.0g,youngs,Young status
+191,main_sect,byte,1,%11.0g,main_sect,Economic sector
+192,indb1,byte,1,%9.0g,,Years of schooling
+193,attained,byte,1,%15.0g,attained,Level of education completed
+194,cash,float,1,%9.0g,,Monthly income in cash for employees
+195,intcash,byte,1,%20.0g,intcash,Income interval
+196,age5,byte,1,%9.0g,age5,Five years age group
+197,age10,byte,1,%9.0g,age10,Broader age group
+198,usualhrs,byte,1,%9.0g,usualhrs,Usually working hours
+199,timegood,byte,1,%9.0g,,Time spent in production of good
+200,timeservice,int,1,%9.0g,,Time spent in production of services
+201,hhsize,byte,1,%11.0g,hhsize,Household size
+202,usual_h,float,1,%9.0g,,Number of usual hours
+203,act_hrs,int,1,%12.0fc,,Number of actual hours worked
+204,acthrs,byte,1,%9.0g,usualhrs,Actual hours intervals
+205,YA,byte,1,%9.0g,YA,Young/adult
+206,hr_own,int,1,%9.0g,,Total hours in own use
+207,combhrs,float,1,%9.0g,,Combined hours for Own use and employment
+208,subhrs,int,1,%9.0g,,Time spent in subsistance activities
+209,hr_cshmain,float,1,%9.0g,,Hourly wage of employees in main job
+210,hr_cash,float,1,%9.0g,,Hourly wage of employees
+211,TVT2,byte,1,%18.0g,TVT2,General or TVET attainemnt
+212,TVET3,byte,1,%26.0g,TVET3,TVET Completion
+213,agdis,byte,1,%9.0g,agdis,RECODE of A04 (Age at last birthday)
+214,Prod_unit,byte,1,%15.0g,Prod_unit,Production sector unit
+215,SM,byte,1,%80.0g,SM,Search methods
+216,UD,byte,1,%27.0g,UD,Unemployment duration
+217,IEV2,byte,1,%19.0g,IEV2,Formal and Informal employment for main job
+218,head,byte,1,%9.0g,,Head of the household
+219,dG01,byte,1,%9.0g,,fetch firewood
+220,dG02,byte,1,%9.0g,,fetch water
+221,dG03,byte,1,%9.0g,,searching fooder or grazing
+222,dG04,byte,1,%9.0g,,manufacturing household goods
+223,dG05,byte,1,%9.0g,,repairing household
+224,dG06,byte,1,%9.0g,,Cooking and shopping
+225,dG07,byte,1,%9.0g,,Looking after children and aldery
+226,age3,byte,1,%9.0g,age3,selected age group
+227,TVT,byte,1,%12.0g,TVT,Attended TVT or not
+228,LU2,byte,1,%9.0g,,LU2 - Combined rate of unemployment and time-related underemployment(%)
+229,LU3,byte,1,%9.0g,,LU3 - Combined rate of unemployment and potential labour force(%)
+230,LU4,byte,1,%9.0g,,LU4 - Composite measure of labour underutilization(%)
+231,TRUR,byte,1,%9.0g,,Time related underemployment rate(%)
+232,indb05,byte,1,%43.0g,indb05,Field of education
+233,isco2digit,byte,1,%81.0g,isco2digit,occupation activity at two digit
+234,isic2digitdigit,byte,1,%126.0g,isic2digit,economic activity at two digit
+235,indd01,byte,1,%50.0g,indd01, ISCO High level
+236,indd03,byte,1,%69.0g,indd03, ISIC High level
+237,inde02,byte,1,%69.0g,inde02, ISIC High level_secondary
+238,age3_16_30,byte,1,%9.0g,age3_16_30,Youth age groups
+239,YUR1,byte,1,%9.0g,,Youth unemployment rate
