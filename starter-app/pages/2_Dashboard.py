@@ -1,8 +1,21 @@
 import pandas as pd
 import plotly.express as px
+import requests
 import streamlit as st
 
 from src.loaders import get_data_dir
+
+API_URL = "http://localhost:8000"
+
+
+def _api_get(path: str, params: dict | None = None):
+    """Call a dashboard API endpoint; return parsed JSON or None on failure."""
+    try:
+        resp = requests.get(f"{API_URL}{path}", params=params, timeout=15)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception:
+        return None
 
 st.set_page_config(
     page_title="Gender Intelligence Dashboard",
@@ -265,26 +278,7 @@ st.markdown(
 )
 
 variables_df = pd.read_csv("data/datasets/Variables_description_RW_LFS2023.csv")
-
-# remove all the NaN values in the dataframe
-variable_df = variables_df.dropna(subset="NaN")
-
-print("variables_df head:", variables_df.head())
-# filter gender
-
-
-total_variables = len(variables_df)
-numeric_variables = int(variables_df[variables_df["isnumeric"] == 1].shape[0])
-categorical_variables = total_variables - numeric_variables
-gender_related_variables = int(
-    variables_df["varlab"]
-    .fillna("")
-    .str.contains("sex|gender|female|male|woman|women|men", case=False, regex=True)
-    .sum()
-)
-print(gender_related_variables)
-
-print(variables_df.columns)
+variables_df = variables_df.dropna()
 
 
 filter_col_1, filter_col_2, filter_col_3, filter_col_4 = st.columns(
@@ -303,7 +297,7 @@ with filter_col_1:
         ],
     )
 with filter_col_2:
-    year = st.selectbox("Year", [2023, 2022, 2021, 2020, 2019, 2018], index=0)
+    year = st.selectbox("Year", [2024, 2023, 2022], index=1)
 with filter_col_3:
     region = st.selectbox(
         "Region",
@@ -317,13 +311,22 @@ with filter_col_4:
 
 st.markdown("")
 
+# ── Fetch KPI data from API ───────────────────────────────────────────────────
+_kpis = _api_get("/dashboard/kpis", {"year": year})
+_avg_gap = _kpis["avg_gender_gap"] if _kpis else "—"
+_female_avg = _kpis["female_avg"] if _kpis else "—"
+_male_avg = _kpis["male_avg"] if _kpis else "—"
+_regions = _kpis["regions_tracked"] if _kpis else "—"
+_kpi_year = _kpis["year"] if _kpis else year
+
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 kpi1.markdown(
     f"""
     <div class="kpi-card">
-      <div class="kpi-title">Total Variables</div>
-      <div class="kpi-value">{total_variables}</div>
-      <div class="kpi-sub">Indicators available in RW LFS 2023</div>
+      <div style="color:#22c55e;font-size:12px;margin-bottom:4px;">→ {_avg_gap}% gender gap</div>
+      <div class="kpi-title">Avg Gender Gap</div>
+      <div class="kpi-value">{_avg_gap}%</div>
+      <div class="kpi-sub">Current disparity in employment</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -331,9 +334,9 @@ kpi1.markdown(
 kpi2.markdown(
     f"""
     <div class="kpi-card">
-      <div class="kpi-title">Numeric Variables</div>
-      <div class="kpi-value">{numeric_variables}</div>
-      <div class="kpi-sub">Ready for direct statistical analysis</div>
+      <div class="kpi-title">Female Avg</div>
+      <div class="kpi-value">{_female_avg}%</div>
+      <div class="kpi-sub">Employment Rate ({_kpi_year})</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -341,9 +344,9 @@ kpi2.markdown(
 kpi3.markdown(
     f"""
     <div class="kpi-card">
-      <div class="kpi-title">Categorical Variables</div>
-      <div class="kpi-value">{categorical_variables}</div>
-      <div class="kpi-sub">Suitable for group comparisons & gaps</div>
+      <div class="kpi-title">Male Avg</div>
+      <div class="kpi-value">{_male_avg}%</div>
+      <div class="kpi-sub">Employment Rate ({_kpi_year})</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -351,9 +354,9 @@ kpi3.markdown(
 kpi4.markdown(
     f"""
     <div class="kpi-card">
-      <div class="kpi-title">Gender‑Related Variables</div>
-      <div class="kpi-value">{gender_related_variables}</div>
-      <div class="kpi-sub">Variables explicitly referencing sex or gender</div>
+      <div class="kpi-title">Regions Tracked</div>
+      <div class="kpi-value">{_regions}</div>
+      <div class="kpi-sub">Provinces monitored</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -371,7 +374,6 @@ type_counts = (
     .astype(str)
     .value_counts()
     .reset_index()
-    .rename(columns={"index": "type", "type": "count"})
 )
 
 section_counts = (
@@ -381,7 +383,7 @@ section_counts = (
     .str[0]
     .value_counts()
     .reset_index()
-    .rename(columns={"index": "section", "name": "count"})
+    .rename(columns={"name": "section"})
     .sort_values("section")
 )
 
@@ -431,46 +433,20 @@ with meta_col2:
 
 left_chart_col, insight_col = st.columns([2.25, 1.0])
 
-trend_df = pd.DataFrame(
-    {
-        "year": [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
-        "gap": [10.8, 9.3, 13.4, 9.8, 6.7, 5.2, 4.1, 3.0, 2.1],
-        "segment": [
-            "Historical",
-            "Historical",
-            "Historical",
-            "Historical",
-            "Historical",
-            "Historical",
-            "Forecast",
-            "Forecast",
-            "Forecast",
-        ],
-    }
-)
-
-with left_chart_col:
-    st.markdown(
-        "<div class='section-card'><div class='panel-title'>Gender Gap Trend & Forecast</div><div class='panel-subtitle'>2018-2023 historical · 2024-2026 ML forecast</div>",
-        unsafe_allow_html=True,
+_trend_resp = _api_get("/dashboard/trend")
+if _trend_resp:
+    trend_df = pd.DataFrame(_trend_resp["data"])
+else:
+    trend_df = pd.DataFrame(
+        {"year": [2022, 2023, 2024, 2025, 2026], "gap": [0, 0, 0, 0, 0], "segment": ["Historical"] * 3 + ["Forecast"] * 2}
     )
 
-    df = pd.DataFrame(
-        {
-            "year": [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
-            "gap": [10.8, 9.3, 13.4, 9.8, 6.7, 5.2, 4.1, 3.0, 2.1],
-            "segment": [
-                "Historical",
-                "Historical",
-                "Historical",
-                "Historical",
-                "Historical",
-                "Historical",
-                "Forecast",
-                "Forecast",
-                "Forecast",
-            ],
-        }
+with left_chart_col:
+    _hist_years = trend_df[trend_df["segment"] == "Historical"]["year"]
+    _hist_label = f"{_hist_years.min()}–{_hist_years.max()} historical" if not _hist_years.empty else "historical"
+    st.markdown(
+        f"<div class='section-card'><div class='panel-title'>Gender Gap Trend & Forecast</div><div class='panel-subtitle'>{_hist_label} · 2025–2026 ML forecast</div>",
+        unsafe_allow_html=True,
     )
 
     trend_fig = px.line(
@@ -515,13 +491,11 @@ st.markdown("")
 
 line_col, ask_col = st.columns([2.25, 1.0])
 
-series_df = pd.DataFrame(
-    {
-        "year": [2018, 2019, 2020, 2021, 2022, 2023],
-        "Female": [52.1, 51.8, 52.0, 55.4, 60.9, 62.5],
-        "Male": [63.8, 62.6, 65.7, 64.9, 66.2, 67.6],
-    }
-)
+_ts_resp = _api_get("/dashboard/timeseries")
+if _ts_resp:
+    series_df = pd.DataFrame(_ts_resp["data"])
+else:
+    series_df = pd.DataFrame({"year": [], "Female": [], "Male": []})
 series_long = series_df.melt(id_vars="year", var_name="group", value_name="value")
 
 with line_col:
@@ -591,12 +565,11 @@ with ask_col:
 
 st.markdown("")
 
-rank_df = pd.DataFrame(
-    {
-        "region": ["Western", "Southern", "Northern", "Kigali City", "Eastern"],
-        "gap": [11.6, 10.3, 3.2, 2.4, 0.5],
-    }
-)
+_regional_resp = _api_get("/dashboard/regional", {"year": year})
+if _regional_resp:
+    rank_df = pd.DataFrame(_regional_resp["data"])
+else:
+    rank_df = pd.DataFrame({"region": [], "gap": []})
 rank_fig = px.bar(
     rank_df,
     x="gap",
@@ -604,12 +577,9 @@ rank_fig = px.bar(
     orientation="h",
     color="region",
     color_discrete_map={
-        "Western": "#5B6CFA",
-        "Eastern": "#25C997",
-        "Southern": "#E3E8F2",
-        "Northern": "#E3E8F2",
-        "Kigali City": "#E3E8F2",
-    },
+        r: ("#5B6CFA" if i == 0 else "#25C997" if i == len(rank_df) - 1 else "#E3E8F2")
+        for i, r in enumerate(rank_df["region"].tolist())
+    } if not rank_df.empty else {},
 )
 rank_fig.update_layout(
     margin=dict(l=8, r=8, t=8, b=8),
@@ -624,7 +594,7 @@ rank_fig.update_traces(marker_line_width=0)
 rank_fig.update_yaxes(categoryorder="total ascending")
 
 st.markdown(
-    "<div class='section-card'><div class='panel-title'>Regional Disparity Ranking</div><div class='panel-subtitle'>Gender gap by province · 2023</div>",
+    f"<div class='section-card'><div class='panel-title'>Regional Disparity Ranking</div><div class='panel-subtitle'>Gender gap by province · {year}</div>",
     unsafe_allow_html=True,
 )
 st.plotly_chart(rank_fig, use_container_width=True)
@@ -632,41 +602,14 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("")
 
-table_df = pd.DataFrame(
-    {
-        "INDICATOR": [
-            "Employment Rate (%)",
-            "Literacy Rate (%)",
-            "Primary Education (%)",
-            "Wage (Monthly Avg)",
-            "Healthcare Access (%)",
-            "Business Ownership (%)",
-        ],
-        "FEMALE": ["52.7%", "59.9%", "61.9%", "62.5%", "52.6%", "57.3%"],
-        "MALE": ["57.5%", "64.8%", "70.2%", "67.6%", "62.9%", "64.0%"],
-        "GAP": ["4.8%", "4.9%", "8.4%", "5.1%", "10.3%", "6.6%"],
-        "STATUS": [
-            "On Track",
-            "On Track",
-            "Needs Attention",
-            "On Track",
-            "Needs Attention",
-            "On Track",
-        ],
-    }
-)
-
-
-def _status_label(value: str) -> str:
-    if value == "On Track":
-        return "🟢 On Track"
-    return "🟡 Needs Attention"
-
-
-table_df["STATUS"] = table_df["STATUS"].apply(_status_label)
+_indicators_resp = _api_get("/dashboard/indicators", {"year": year})
+if _indicators_resp:
+    table_df = pd.DataFrame(_indicators_resp["data"])
+else:
+    table_df = pd.DataFrame(columns=["INDICATOR", "FEMALE", "MALE", "GAP", "STATUS"])
 
 st.markdown(
-    "<div class='section-card'><div class='panel-title'>All Indicators Overview</div><div class='panel-subtitle'>Comparative gender gaps across all tracked indicators · 2023</div>",
+    f"<div class='section-card'><div class='panel-title'>All Indicators Overview</div><div class='panel-subtitle'>Comparative gender gaps across all tracked indicators · {year}</div>",
     unsafe_allow_html=True,
 )
 st.dataframe(table_df, use_container_width=True, hide_index=True)

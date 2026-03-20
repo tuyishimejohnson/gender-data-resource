@@ -5,16 +5,21 @@ Run:
     corn api.main:app --reload
 
 Endpoints:
-    POST /chat          — send a message, get an AI response
+    POST /api           — send a message, get an AI response
     DELETE /chat/{sid}  — clear a session's history
     GET  /health        — liveness check
 """
 from contextlib import asynccontextmanager
 
+import json
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from api.agent import run_agent
+from api.agent import run_agent, stream_agent
+from api.routers.dashboard import router as dashboard_router
 
 MAX_HISTORY = 20  # messages kept per session (each turn = 2 entries)
 
@@ -36,6 +41,16 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://localhost:8501"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(dashboard_router)
 
 
 # ---------------------------------------------------------------------------
@@ -70,6 +85,38 @@ async def chat(req: ChatRequest):
         _sessions[req.session_id] = history[-MAX_HISTORY:]
 
     return ChatResponse(answer=answer, session_id=req.session_id)
+
+
+@app.post("/chat/stream")
+async def chat_stream(req: ChatRequest):
+    history = _sessions.setdefault(req.session_id, [])
+    collected: list[str] = []
+
+    async def generate():
+        try:
+            async for item in stream_agent(req.message, history):
+                if item.startswith("STATUS:"):
+                    yield f"data: {json.dumps({'status': item[7:]})}\n\n"
+                else:
+                    collected.append(item)
+                    yield f"data: {json.dumps({'t': item})}\n\n"
+        except Exception as exc:
+            yield f"data: {json.dumps({'error': str(exc)})}\n\n"
+        finally:
+            # Persist the full turn to session history
+            full_answer = "".join(collected)
+            if full_answer:
+                history.append({"role": "user", "content": req.message})
+                history.append({"role": "assistant", "content": full_answer})
+                if len(history) > MAX_HISTORY:
+                    _sessions[req.session_id] = history[-MAX_HISTORY:]
+            yield "data: [DONE]\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.delete("/chat/{session_id}")

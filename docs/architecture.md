@@ -16,9 +16,9 @@ LLM formats answer
              │   User Query  │
              └──────┬────────┘
                     ↓
-           LangChain Agent
-           /             \
-          ↓               ↓
+           LangChain Agent---------------------------------
+           /             \                                 |
+          ↓               ↓                                 web search (trusted sources)
    Data Tool         Vector Search
 (Postgres/DuckDB)    (FAISS/Pinecone)
           ↓               ↓

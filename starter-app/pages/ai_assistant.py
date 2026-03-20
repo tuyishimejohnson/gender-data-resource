@@ -1,3 +1,7 @@
+import uuid
+
+import markdown as md_lib
+import requests
 import streamlit as st
 from datetime import datetime
 
@@ -242,6 +246,33 @@ def render_ai_assistant():
         0%, 80%, 100% { transform: translateY(0); }
         40%           { transform: translateY(-5px); }
     }
+
+    /* ── Markdown inside bot bubbles ── */
+    .msg-bubble.bot p { margin: 0 0 8px; }
+    .msg-bubble.bot p:last-child { margin-bottom: 0; }
+    .msg-bubble.bot ul, .msg-bubble.bot ol { margin: 6px 0 6px 18px; }
+    .msg-bubble.bot li { margin-bottom: 3px; }
+    .msg-bubble.bot h1, .msg-bubble.bot h2, .msg-bubble.bot h3 {
+        font-size: 14px; font-weight: 600; margin: 8px 0 4px; color: #1a1a2e;
+    }
+    .msg-bubble.bot strong { color: #5b4fcf; }
+    .msg-bubble.bot code {
+        background: #f0eeff; padding: 1px 5px;
+        border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 12px;
+    }
+    .msg-bubble.bot pre {
+        background: #f0eeff; padding: 10px;
+        border-radius: 8px; overflow-x: auto; margin: 8px 0;
+    }
+    .msg-bubble.bot pre code { background: none; padding: 0; }
+    .msg-bubble.bot table {
+        border-collapse: collapse; font-size: 12px; margin: 8px 0; width: 100%;
+    }
+    .msg-bubble.bot th, .msg-bubble.bot td {
+        border: 1px solid #e8e4fd; padding: 4px 8px;
+    }
+    .msg-bubble.bot th { background: #f0eeff; }
+    .msg-bubble.bot a { color: #7c5cfc; text-decoration: underline; }
     </style>
     """,
         unsafe_allow_html=True,
@@ -259,6 +290,9 @@ def render_ai_assistant():
 
     if "input_key" not in st.session_state:
         st.session_state.input_key = 0
+
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
 
     CHIPS = [
         "Highest gap region?",
@@ -279,11 +313,14 @@ def render_ai_assistant():
     for msg in st.session_state.messages:
         role = msg["role"]
         if role == "bot":
+            rendered = md_lib.markdown(
+                msg["text"], extensions=["tables", "fenced_code"]
+            )
             msgs_html += f"""
             <div class="msg-row">
                 <div class="msg-avatar">🤖</div>
                 <div class="msg-col">
-                    <div class="msg-bubble bot">{msg["text"]}</div>
+                    <div class="msg-bubble bot">{rendered}</div>
                     <div class="msg-time">{msg["time"]}</div>
                 </div>
             </div>"""
@@ -403,11 +440,24 @@ def render_ai_assistant():
 
     if send and user_input.strip():
         add_message(user_input.strip(), "user")
-        # Echo bot reply (replace with real API call as needed)
-        add_message(
-            f"Thanks for your question about **{user_input.strip()}**. "
-            "Here's what the data shows… *(connect your AI backend here)*",
-            "bot",
-        )
+        with st.spinner("Thinking…"):
+            try:
+                resp = requests.post(
+                    "http://localhost:8000/api",
+                    json={
+                        "message": user_input.strip(),
+                        "session_id": st.session_state.session_id,
+                    },
+                    timeout=120,
+                )
+                if resp.status_code == 200:
+                    answer = resp.json()["answer"]
+                else:
+                    answer = f"⚠️ The assistant returned an error (`{resp.status_code}`). Please try again."
+            except requests.exceptions.ConnectionError:
+                answer = "⚠️ Could not reach the AI backend. Make sure the API server is running on `localhost:8000`."
+            except requests.exceptions.Timeout:
+                answer = "⚠️ The request timed out. The AI is taking too long to respond — try a simpler question."
+        add_message(answer, "bot")
         st.session_state.input_key += 1
         st.rerun()
