@@ -35,4 +35,7 @@ def _run_query(sql: str) -> str:
     if result.empty:
         return "Query returned no results."
 
-    return result.head(500).to_string(index=False)
+    output = result.head(500).to_string(index=False)
+    print("\n[DuckDB] SQL:", sql)
+    print("[DuckDB] Result:\n", output)
+    return output

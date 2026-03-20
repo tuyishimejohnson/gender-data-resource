@@ -42,4 +42,7 @@ def _run_search(query: str) -> str:
             f"Page {meta.get('page', '?')}]\n"
             f"{meta.get('text', '').strip()}"
         )
-    return "\n\n---\n\n".join(parts)
+    output = "\n\n---\n\n".join(parts)
+    print("\n[RAG] Query:", query)
+    print("[RAG] Result:\n", output)
+    return output

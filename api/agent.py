@@ -11,6 +11,7 @@ Flow per user message:
 Tools:
   search_gender_reports — Pinecone RAG (Tool 1)
   query_lfs_data        — DuckDB on LFS parquet files (Tool 2)
+  web_search            — Tavily web search for current info (Tool 3)
 """
 import json
 from functools import lru_cache
@@ -22,24 +23,27 @@ from openai import OpenAI
 from api.config import CHAT_MODEL, OPENAI_API_KEY, PARQUET, VARIABLES_CSV
 from api.tools.data import _run_query
 from api.tools.rag import _run_search
+from api.tools.search import _run_web_search
 
 _client = OpenAI(api_key=OPENAI_API_KEY)
 
 _SYSTEM_TEMPLATE = """\
 You are a gender data analyst specialising in Rwanda.
 
-You have access to two tools:
+You have access to three tools:
 1. search_gender_reports — search official reports and policy documents
 2. query_lfs_data — query Rwanda Labour Force Survey (LFS) microdata (2022–2024)
+3. web_search — search the web for current news, recent events, or broader context
 
 Strategy:
-- For statistical questions (counts, rates, breakdowns by sex/province/age), \
-use query_lfs_data.
-- For policy context, qualitative insights, or document citations, \
-use search_gender_reports.
-- For comprehensive answers, call BOTH tools and combine their results.
-- Always state which data source (year, document) your figures come from.
+- For EVERY user question, call ALL THREE tools in parallel:
+  1. query_lfs_data — write a SQL query relevant to the topic
+  2. search_gender_reports — search for related policy or document context
+  3. web_search — search the web with a precise, focused query on the topic
+- Combine the results from all three tools into a single comprehensive answer.
+- Always state which data source (year, document, or URL) your figures come from.
 - Use SUM(weight2) instead of COUNT(*) when computing population estimates from LFS data.
+- Always include the source URLs from web_search as references at the end of your answer.
 
 LFS variable reference (columns available in lfs2022 / lfs2023 / lfs2024):
 {variable_context}
@@ -90,6 +94,27 @@ _TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": (
+                "Search the web for current information, recent news, or broader context "
+                "not available in internal documents or LFS data. Returns results with "
+                "source URLs to include as references. Use a precise, focused search query."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "A precise search query tailored to find relevant information.",
+                    }
+                },
+                "required": ["query"],
+            },
+        },
+    },
 ]
 
 
@@ -107,6 +132,8 @@ def _dispatch_tool(name: str, args: dict) -> str:
         return _run_search(args["query"])
     if name == "query_lfs_data":
         return _run_query(args["sql"])
+    if name == "web_search":
+        return _run_web_search(args["query"])
     return f"Unknown tool: {name}"
 
 
