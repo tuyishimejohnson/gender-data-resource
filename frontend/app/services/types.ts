@@ -66,3 +66,109 @@ export interface CoreMetricsDataPoint {
 export interface CoreMetricsData {
   data: CoreMetricsDataPoint[];
 }
+
+export interface BoxPlotStats {
+  min: number;
+  q1: number;
+  median: number;
+  q3: number;
+  max: number;
+  mean: number;
+}
+
+export interface AverageIncomeData {
+  year: number;
+  data: {
+    Female: BoxPlotStats;
+    Male: BoxPlotStats;
+  };
+}
+
+export interface IncomeDistributionData {
+  year: number;
+  brackets: number[];
+  data: {
+    Female: number[];
+    Male: number[];
+  };
+}
+
+export interface HourlyWageData {
+  year: number;
+  data: {
+    Female: BoxPlotStats;
+    Male: BoxPlotStats;
+  };
+}
+
+export interface SectorEmploymentPoint {
+  sector: string;
+  Female: number;
+  Male: number;
+  female_percentage: number;
+  male_percentage: number;
+}
+
+export interface SectorEmploymentData {
+  year: number;
+  data: SectorEmploymentPoint[];
+}
+
+export interface FormalInformalPoint {
+  category: string;
+  Female: number;
+  Male: number;
+  female_percentage: number;
+  male_percentage: number;
+}
+
+export interface FormalInformalData {
+  year: number;
+  data: FormalInformalPoint[];
+}
+
+export interface OccupationPoint {
+  code: number;
+  occupation: string;
+  Female: number;
+  Male: number;
+  female_percentage: number;
+  male_percentage: number;
+  total: number;
+}
+
+export interface OccupationSegregationData {
+  year: number;
+  data: OccupationPoint[];
+}
+
+export interface ProvinceEmploymentPoint {
+  province: string;
+  code: number;
+  Female: number;
+  Male: number;
+  gap: number;
+  female_employed: number;
+  male_employed: number;
+}
+
+export interface ProvinceEmploymentData {
+  year: number;
+  data: ProvinceEmploymentPoint[];
+}
+
+export interface UrbanRuralPoint {
+  area: string;
+  Female: number;
+  Male: number;
+  gap: number;
+  female_employed: number;
+  male_employed: number;
+  female_total: number;
+  male_total: number;
+}
+
+export interface UrbanRuralData {
+  year: number;
+  data: UrbanRuralPoint[];
+}

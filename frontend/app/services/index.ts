@@ -6,6 +6,14 @@ import type {
   RegionalData,
   IndicatorsData,
   CoreMetricsData,
+  AverageIncomeData,
+  IncomeDistributionData,
+  HourlyWageData,
+  SectorEmploymentData,
+  FormalInformalData,
+  OccupationSegregationData,
+  ProvinceEmploymentData,
+  UrbanRuralData,
 } from "./types";
 
 export const api = axios.create({
@@ -23,6 +31,14 @@ export type {
   RegionalData,
   IndicatorsData,
   CoreMetricsData,
+  AverageIncomeData,
+  IncomeDistributionData,
+  HourlyWageData,
+  SectorEmploymentData,
+  FormalInformalData,
+  OccupationSegregationData,
+  ProvinceEmploymentData,
+  UrbanRuralData,
 } from "./types";
 
 // Dashboard API Functions
@@ -54,6 +70,46 @@ export const dashboardApi = {
 
   getCoreMetrics: async (): Promise<CoreMetricsData> => {
     const response = await api.get("/dashboard/core-metrics");
+    return response.data;
+  },
+
+  getAverageIncome: async (year: number = 2023): Promise<AverageIncomeData> => {
+    const response = await api.get(`/dashboard/income-inequality/average-income?year=${year}`);
+    return response.data;
+  },
+
+  getIncomeDistribution: async (year: number = 2023): Promise<IncomeDistributionData> => {
+    const response = await api.get(`/dashboard/income-inequality/income-distribution?year=${year}`);
+    return response.data;
+  },
+
+  getHourlyWage: async (year: number = 2023): Promise<HourlyWageData> => {
+    const response = await api.get(`/dashboard/income-inequality/hourly-wage?year=${year}`);
+    return response.data;
+  },
+
+  getSectorEmployment: async (year: number = 2023): Promise<SectorEmploymentData> => {
+    const response = await api.get(`/dashboard/sector-segregation/employment-by-sector?year=${year}`);
+    return response.data;
+  },
+
+  getFormalInformal: async (year: number = 2023): Promise<FormalInformalData> => {
+    const response = await api.get(`/dashboard/sector-segregation/formal-informal?year=${year}`);
+    return response.data;
+  },
+
+  getOccupationSegregation: async (year: number = 2023): Promise<OccupationSegregationData> => {
+    const response = await api.get(`/dashboard/sector-segregation/occupation-segregation?year=${year}`);
+    return response.data;
+  },
+
+  getProvinceEmployment: async (year: number = 2023): Promise<ProvinceEmploymentData> => {
+    const response = await api.get(`/dashboard/geography/employment-by-province?year=${year}`);
+    return response.data;
+  },
+
+  getUrbanRuralGap: async (year: number = 2023): Promise<UrbanRuralData> => {
+    const response = await api.get(`/dashboard/geography/urban-rural-gap?year=${year}`);
     return response.data;
   },
 };

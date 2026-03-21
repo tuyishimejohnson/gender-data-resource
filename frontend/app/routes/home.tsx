@@ -7,6 +7,9 @@ import { GenderGapChart } from "~/components/GenderGraph";
 import { MaleVsFemaleChart } from "~/components/MalevsFemale";
 import { RegionalDisparityChart } from "~/components/RegionalDispacity";
 import { IndicatorsTable } from "~/components/Indicator";
+import { IncomeInequality } from "~/components/IncomeInequality";
+import { SectorSegregation } from "~/components/SectorSegregation";
+import { GeographyInequality } from "~/components/GeographyInequality";
 import { AIInsights } from "~/components/AllInsight";
 import { AskIntelligence } from "~/components/AskIntelligent";
 import { Crown } from "lucide-react";
@@ -18,6 +21,14 @@ import type {
   RegionalData,
   IndicatorsData,
   CoreMetricsData,
+  AverageIncomeData,
+  IncomeDistributionData,
+  HourlyWageData,
+  SectorEmploymentData,
+  FormalInformalData,
+  OccupationSegregationData,
+  ProvinceEmploymentData,
+  UrbanRuralData,
 } from "~/services";
 
 export default function App() {
@@ -28,6 +39,17 @@ export default function App() {
   const [regionalData, setRegionalData] = useState<RegionalData | null>(null);
   const [indicatorsData, setIndicatorsData] = useState<IndicatorsData | null>(null);
   const [coreMetricsData, setCoreMetricsData] = useState<CoreMetricsData | null>(null);
+  const [averageIncomeData, setAverageIncomeData] = useState<AverageIncomeData | null>(null);
+  const [incomeDistributionData, setIncomeDistributionData] =
+    useState<IncomeDistributionData | null>(null);
+  const [hourlyWageData, setHourlyWageData] = useState<HourlyWageData | null>(null);
+  const [sectorEmploymentData, setSectorEmploymentData] = useState<SectorEmploymentData | null>(
+    null
+  );
+  const [formalInformalData, setFormalInformalData] = useState<FormalInformalData | null>(null);
+  const [occupationData, setOccupationData] = useState<OccupationSegregationData | null>(null);
+  const [provinceData, setProvinceData] = useState<ProvinceEmploymentData | null>(null);
+  const [urbanRuralData, setUrbanRuralData] = useState<UrbanRuralData | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch data on mount and when year changes
@@ -35,13 +57,36 @@ export default function App() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [kpis, trend, timeseries, regional, indicators, coreMetrics] = await Promise.all([
+        const [
+          kpis,
+          trend,
+          timeseries,
+          regional,
+          indicators,
+          coreMetrics,
+          avgIncome,
+          incomeDist,
+          hourlyWage,
+          sectorEmp,
+          formalInf,
+          occupation,
+          province,
+          urbanRural,
+        ] = await Promise.all([
           dashboardApi.getKPIs(selectedYear),
           dashboardApi.getTrend(),
           dashboardApi.getTimeseries(),
           dashboardApi.getRegional(selectedYear),
           dashboardApi.getIndicators(selectedYear),
           dashboardApi.getCoreMetrics(),
+          dashboardApi.getAverageIncome(selectedYear),
+          dashboardApi.getIncomeDistribution(selectedYear),
+          dashboardApi.getHourlyWage(selectedYear),
+          dashboardApi.getSectorEmployment(selectedYear),
+          dashboardApi.getFormalInformal(selectedYear),
+          dashboardApi.getOccupationSegregation(selectedYear),
+          dashboardApi.getProvinceEmployment(selectedYear),
+          dashboardApi.getUrbanRuralGap(selectedYear),
         ]);
 
         setKpiData(kpis);
@@ -50,6 +95,14 @@ export default function App() {
         setRegionalData(regional);
         setIndicatorsData(indicators);
         setCoreMetricsData(coreMetrics);
+        setAverageIncomeData(avgIncome);
+        setIncomeDistributionData(incomeDist);
+        setHourlyWageData(hourlyWage);
+        setSectorEmploymentData(sectorEmp);
+        setFormalInformalData(formalInf);
+        setOccupationData(occupation);
+        setProvinceData(province);
+        setUrbanRuralData(urbanRural);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -107,14 +160,29 @@ export default function App() {
           <div className="flex-1 space-y-6">
             <StatsCards data={kpiData} loading={loading} />
             <CoreMetrics data={coreMetricsData} loading={loading} />
-            <GenderGapChart data={trendData} loading={loading} />
-            <MaleVsFemaleChart data={timeseriesData} loading={loading} />
-            <RegionalDisparityChart data={regionalData} loading={loading} />
+            <IncomeInequality
+              averageIncomeData={averageIncomeData}
+              incomeDistributionData={incomeDistributionData}
+              hourlyWageData={hourlyWageData}
+              loading={loading}
+            />
+            <SectorSegregation
+              sectorEmploymentData={sectorEmploymentData}
+              formalInformalData={formalInformalData}
+              occupationData={occupationData}
+              loading={loading}
+            />
+            <GeographyInequality
+              provinceData={provinceData}
+              urbanRuralData={urbanRuralData}
+              loading={loading}
+            />
+
             <IndicatorsTable data={indicatorsData} loading={loading} />
           </div>
           <div className="w-96 space-y-6 sticky top-6 h-fit">
-            <AIInsights />
             <AskIntelligence />
+            <AIInsights />
           </div>
         </div>
       </main>
