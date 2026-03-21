@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Header } from "~/components/Header";
 import { DashboardFilters } from "~/components/DashboardFilter";
 import { StatsCards } from "~/components/StatCard";
+import { CoreMetrics } from "~/components/CoreMetrics";
 import { GenderGapChart } from "~/components/GenderGraph";
 import { MaleVsFemaleChart } from "~/components/MalevsFemale";
 import { RegionalDisparityChart } from "~/components/RegionalDispacity";
@@ -16,6 +17,7 @@ import type {
   TimeseriesData,
   RegionalData,
   IndicatorsData,
+  CoreMetricsData,
 } from "~/services";
 
 export default function App() {
@@ -25,6 +27,7 @@ export default function App() {
   const [timeseriesData, setTimeseriesData] = useState<TimeseriesData | null>(null);
   const [regionalData, setRegionalData] = useState<RegionalData | null>(null);
   const [indicatorsData, setIndicatorsData] = useState<IndicatorsData | null>(null);
+  const [coreMetricsData, setCoreMetricsData] = useState<CoreMetricsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch data on mount and when year changes
@@ -32,12 +35,13 @@ export default function App() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [kpis, trend, timeseries, regional, indicators] = await Promise.all([
+        const [kpis, trend, timeseries, regional, indicators, coreMetrics] = await Promise.all([
           dashboardApi.getKPIs(selectedYear),
           dashboardApi.getTrend(),
           dashboardApi.getTimeseries(),
           dashboardApi.getRegional(selectedYear),
           dashboardApi.getIndicators(selectedYear),
+          dashboardApi.getCoreMetrics(),
         ]);
 
         setKpiData(kpis);
@@ -45,6 +49,7 @@ export default function App() {
         setTimeseriesData(timeseries);
         setRegionalData(regional);
         setIndicatorsData(indicators);
+        setCoreMetricsData(coreMetrics);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -101,6 +106,7 @@ export default function App() {
         <div className="flex gap-6">
           <div className="flex-1 space-y-6">
             <StatsCards data={kpiData} loading={loading} />
+            <CoreMetrics data={coreMetricsData} loading={loading} />
             <GenderGapChart data={trendData} loading={loading} />
             <MaleVsFemaleChart data={timeseriesData} loading={loading} />
             <RegionalDisparityChart data={regionalData} loading={loading} />

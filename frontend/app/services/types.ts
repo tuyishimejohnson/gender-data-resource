@@ -50,3 +50,19 @@ export interface IndicatorsData {
   data: IndicatorRow[];
   year: number;
 }
+
+export interface GenderMetric {
+  Female: number;
+  Male: number;
+}
+
+export interface CoreMetricsDataPoint {
+  year: number;
+  employment_rate: GenderMetric;
+  unemployment_rate: GenderMetric;
+  lfpr: GenderMetric;
+}
+
+export interface CoreMetricsData {
+  data: CoreMetricsDataPoint[];
+}

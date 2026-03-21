@@ -5,6 +5,7 @@ import type {
   TimeseriesData,
   RegionalData,
   IndicatorsData,
+  CoreMetricsData,
 } from "./types";
 
 export const api = axios.create({
@@ -21,6 +22,7 @@ export type {
   TimeseriesData,
   RegionalData,
   IndicatorsData,
+  CoreMetricsData,
 } from "./types";
 
 // Dashboard API Functions
@@ -47,6 +49,11 @@ export const dashboardApi = {
 
   getIndicators: async (year: number = 2023): Promise<IndicatorsData> => {
     const response = await api.get(`/dashboard/indicators?year=${year}`);
+    return response.data;
+  },
+
+  getCoreMetrics: async (): Promise<CoreMetricsData> => {
+    const response = await api.get("/dashboard/core-metrics");
     return response.data;
   },
 };

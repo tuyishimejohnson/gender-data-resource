@@ -7,6 +7,7 @@ Endpoints:
     GET /dashboard/timeseries              — Male vs female employment rate by year
     GET /dashboard/regional?year=2023     — Gender gap by province
     GET /dashboard/indicators?year=2023   — Indicators overview table
+    GET /dashboard/core-metrics            — Employment rate, unemployment rate, and LFPR by gender
 """
 import duckdb
 import numpy as np
@@ -193,3 +194,54 @@ def get_indicators(year: int = Query(default=2023)):
             )
 
     return {"data": rows, "year": year}
+
+
+@router.get("/core-metrics")
+def get_core_metrics():
+    """Calculate Employment Rate, Unemployment Rate, and LFPR by gender across all years."""
+    con = _connect()
+    try:
+        results = []
+        for year in sorted(_YEAR_TABLE):
+            table = _YEAR_TABLE[year]
+
+            df = con.execute(f"""
+                SELECT
+                    A01 as gender,
+                    SUM(CASE WHEN status1 = 1 THEN weight2 ELSE 0 END)
+                        / NULLIF(SUM(weight2), 0) * 100 AS employment_rate,
+                    SUM(CASE WHEN status1 = 2 THEN weight2 ELSE 0 END)
+                        / NULLIF(
+                            SUM(CASE WHEN status1 IN (1, 2) THEN weight2 ELSE 0 END),
+                            0
+                        ) * 100 AS unemployment_rate,
+                    SUM(CASE WHEN status1 IN (1, 2) THEN weight2 ELSE 0 END)
+                        / NULLIF(SUM(weight2), 0) * 100 AS lfpr
+                FROM {table}
+                WHERE weight2 > 0
+                GROUP BY A01
+            """).fetchdf()
+
+            female_row = df[df["gender"] == 2]
+            male_row = df[df["gender"] == 1]
+
+            year_data = {
+                "year": year,
+                "employment_rate": {
+                    "Female": round(float(female_row["employment_rate"].values[0]), 1) if len(female_row) else 0.0,
+                    "Male": round(float(male_row["employment_rate"].values[0]), 1) if len(male_row) else 0.0
+                },
+                "unemployment_rate": {
+                    "Female": round(float(female_row["unemployment_rate"].values[0]), 1) if len(female_row) else 0.0,
+                    "Male": round(float(male_row["unemployment_rate"].values[0]), 1) if len(male_row) else 0.0
+                },
+                "lfpr": {
+                    "Female": round(float(female_row["lfpr"].values[0]), 1) if len(female_row) else 0.0,
+                    "Male": round(float(male_row["lfpr"].values[0]), 1) if len(male_row) else 0.0
+                }
+            }
+            results.append(year_data)
+    finally:
+        con.close()
+
+    return {"data": results}
