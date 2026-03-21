@@ -1,56 +1,39 @@
 import { Download, CheckCircle2, AlertTriangle } from "lucide-react";
+import type { IndicatorsData } from "~/services";
 
-export function IndicatorsTable() {
-  const indicators = [
-    {
-      name: "Employment Rate (%)",
-      female: "52.7%",
-      male: "57.5%",
-      gap: "4.8%",
-      status: "On Track",
-      statusColor: "text-green-600",
-    },
-    {
-      name: "Literacy Rate (%)",
-      female: "59.9%",
-      male: "64.8%",
-      gap: "4.9%",
-      status: "On Track",
-      statusColor: "text-green-600",
-    },
-    {
-      name: "Primary Education (%)",
-      female: "61.9%",
-      male: "70.2%",
-      gap: "8.4%",
-      status: "Needs Attention",
-      statusColor: "text-amber-600",
-    },
-    {
-      name: "Wage (Monthly Avg)",
-      female: "62.5%",
-      male: "67.6%",
-      gap: "5.1%",
-      status: "On Track",
-      statusColor: "text-green-600",
-    },
-    {
-      name: "Healthcare Access (%)",
-      female: "52.6%",
-      male: "62.9%",
-      gap: "10.3%",
-      status: "Needs Attention",
-      statusColor: "text-amber-600",
-    },
-    {
-      name: "Business Ownership (%)",
-      female: "57.3%",
-      male: "64.0%",
-      gap: "6.6%",
-      status: "On Track",
-      statusColor: "text-green-600",
-    },
-  ];
+interface IndicatorsTableProps {
+  data: IndicatorsData | null;
+  loading?: boolean;
+}
+
+export function IndicatorsTable({ data, loading }: IndicatorsTableProps) {
+  if (loading || !data) {
+    return (
+      <div className="bg-white border rounded-xl p-6 animate-pulse">
+        <div className="h-6 w-48 bg-gray-200 rounded mb-2" />
+        <div className="h-4 w-64 bg-gray-200 rounded mb-6" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-12 bg-gray-100 rounded" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const getStatusColor = (status: string) => {
+    if (status.includes("On Track") || status.includes("🟢")) {
+      return "text-green-600";
+    }
+    return "text-amber-600";
+  };
+
+  const getStatusIcon = (status: string) => {
+    if (status.includes("On Track") || status.includes("🟢")) {
+      return <CheckCircle2 className="h-4 w-4" />;
+    }
+    return <AlertTriangle className="h-4 w-4" />;
+  };
 
   return (
     <div className="bg-white border rounded-xl p-6">
@@ -58,7 +41,7 @@ export function IndicatorsTable() {
         <div>
           <h3 className="text-lg font-bold text-gray-900 mb-1">All Indicators Overview</h3>
           <p className="text-sm text-gray-500">
-            Comparative gender gaps across all tracked indicators — 2023
+            Comparative gender gaps across all tracked indicators — {data.year}
           </p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg">
@@ -88,22 +71,20 @@ export function IndicatorsTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {indicators.map((indicator, index) => (
+            {data.data.map((indicator, index) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="py-4 px-4 text-sm text-gray-900">{indicator.name}</td>
-                <td className="py-4 px-4 text-sm font-medium text-pink-600">{indicator.female}</td>
-                <td className="py-4 px-4 text-sm font-medium text-blue-600">{indicator.male}</td>
-                <td className="py-4 px-4 text-sm font-medium text-gray-900">{indicator.gap}</td>
+                <td className="py-4 px-4 text-sm text-gray-900">{indicator.INDICATOR}</td>
+                <td className="py-4 px-4 text-sm font-medium text-pink-600">{indicator.FEMALE}</td>
+                <td className="py-4 px-4 text-sm font-medium text-blue-600">{indicator.MALE}</td>
+                <td className="py-4 px-4 text-sm font-medium text-gray-900">{indicator.GAP}</td>
                 <td className="py-4 px-4">
                   <div
-                    className={`flex items-center gap-2 text-sm font-medium ${indicator.statusColor}`}
+                    className={`flex items-center gap-2 text-sm font-medium ${getStatusColor(
+                      indicator.STATUS
+                    )}`}
                   >
-                    {indicator.status === "On Track" ? (
-                      <CheckCircle2 className="h-4 w-4" />
-                    ) : (
-                      <AlertTriangle className="h-4 w-4" />
-                    )}
-                    {indicator.status}
+                    {getStatusIcon(indicator.STATUS)}
+                    {indicator.STATUS.replace("🟢 ", "").replace("🟡 ", "")}
                   </div>
                 </td>
               </tr>

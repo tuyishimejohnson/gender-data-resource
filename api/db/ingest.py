@@ -81,7 +81,22 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
 # ---------------------------------------------------------------------------
 # Ingestion
 # ---------------------------------------------------------------------------
-def ingest_pdf(pdf_path: Path, index) -> None:
+def load_source_mapper(mapper_path: Path) -> dict[str, str]:
+    """Load PDF-to-URL mapping from source_pdf_mapper.txt."""
+    mapping = {}
+    if not mapper_path.exists():
+        return mapping
+
+    with open(mapper_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if " => " in line:
+                pdf_name, url = line.split(" => ", 1)
+                mapping[pdf_name.strip()] = url.strip()
+    return mapping
+
+
+def ingest_pdf(pdf_path: Path, index, source_url: str = None) -> None:
     reader = PdfReader(str(pdf_path))
     source = pdf_path.stem
     print(f"  {len(reader.pages)} pages found")
@@ -94,7 +109,15 @@ def ingest_pdf(pdf_path: Path, index) -> None:
             continue
         for chunk_idx, chunk in enumerate(chunk_text(text)):
             uid = hashlib.md5(f"{source}-{page_num}-{chunk_idx}".encode()).hexdigest()
-            records.append((uid, chunk, {"source": source, "page": page_num + 1, "chunk": chunk_idx, "text": chunk}))
+            metadata = {
+                "source": source,
+                "page": page_num + 1,
+                "chunk": chunk_idx,
+                "text": chunk
+            }
+            if source_url:
+                metadata["url"] = source_url
+            records.append((uid, chunk, metadata))
 
     if not records:
         print("  No text extracted, skipping.")
@@ -124,15 +147,31 @@ def main() -> None:
     index = get_or_create_index()
 
     db_dir = Path(__file__).parent
-    pdfs = sorted(db_dir.glob("*.pdf"))
+    pdf_dir = db_dir / "pdf"
+
+    if not pdf_dir.exists():
+        print(f"PDF directory not found: {pdf_dir}")
+        return
+
+    # Load source mapper
+    mapper_path = pdf_dir / "source_pdf_mapper.txt"
+    source_mapper = load_source_mapper(mapper_path)
+    print(f"Loaded {len(source_mapper)} source mappings")
+
+    pdfs = sorted(pdf_dir.glob("*.pdf"))
 
     if not pdfs:
-        print("No PDF files found in", db_dir)
+        print("No PDF files found in", pdf_dir)
         return
+
+    print(f"Found {len(pdfs)} PDF files to process\n")
 
     for pdf_path in pdfs:
         print(f"\nProcessing: {pdf_path.name}")
-        ingest_pdf(pdf_path, index)
+        source_url = source_mapper.get(pdf_path.name)
+        if source_url:
+            print(f"  Source URL: {source_url}")
+        ingest_pdf(pdf_path, index, source_url)
 
     print("\nIngestion complete.")
 

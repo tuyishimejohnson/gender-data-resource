@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "~/components/Header";
 import { DashboardFilters } from "~/components/DashboardFilter";
 import { StatsCards } from "~/components/StatCard";
@@ -8,8 +9,61 @@ import { IndicatorsTable } from "~/components/Indicator";
 import { AIInsights } from "~/components/AllInsight";
 import { AskIntelligence } from "~/components/AskIntelligent";
 import { Crown } from "lucide-react";
+import { dashboardApi } from "~/services";
+import type {
+  KPIData,
+  TrendData,
+  TimeseriesData,
+  RegionalData,
+  IndicatorsData,
+} from "~/services";
 
 export default function App() {
+  const [selectedYear, setSelectedYear] = useState(2023);
+  const [kpiData, setKpiData] = useState<KPIData | null>(null);
+  const [trendData, setTrendData] = useState<TrendData | null>(null);
+  const [timeseriesData, setTimeseriesData] = useState<TimeseriesData | null>(null);
+  const [regionalData, setRegionalData] = useState<RegionalData | null>(null);
+  const [indicatorsData, setIndicatorsData] = useState<IndicatorsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch data on mount and when year changes
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [kpis, trend, timeseries, regional, indicators] = await Promise.all([
+          dashboardApi.getKPIs(selectedYear),
+          dashboardApi.getTrend(),
+          dashboardApi.getTimeseries(),
+          dashboardApi.getRegional(selectedYear),
+          dashboardApi.getIndicators(selectedYear),
+        ]);
+
+        setKpiData(kpis);
+        setTrendData(trend);
+        setTimeseriesData(timeseries);
+        setRegionalData(regional);
+        setIndicatorsData(indicators);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedYear]);
+
+  const getLastUpdateDate = () => {
+    const yearMonths: { [key: number]: string } = {
+      2024: "Jun 2024",
+      2023: "Dec 2023",
+      2022: "Dec 2022",
+    };
+    return yearMonths[selectedYear] || `Year ${selectedYear}`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -26,7 +80,7 @@ export default function App() {
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-500 mb-2">
-                Last updated: <span className="font-medium">Jun 2024</span>
+                Last updated: <span className="font-medium">{getLastUpdateDate()}</span>
               </div>
               <button className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium">
                 <Crown className="h-4 w-4" />
@@ -37,16 +91,20 @@ export default function App() {
         </div>
 
         <div className="mb-6">
-          <DashboardFilters />
+          <DashboardFilters
+            selectedYear={selectedYear}
+            onYearChange={setSelectedYear}
+            dataPointsCount={kpiData?.regions_tracked || 0}
+          />
         </div>
 
         <div className="flex gap-6">
           <div className="flex-1 space-y-6">
-            <StatsCards />
-            <GenderGapChart />
-            <MaleVsFemaleChart />
-            <RegionalDisparityChart />
-            <IndicatorsTable />
+            <StatsCards data={kpiData} loading={loading} />
+            <GenderGapChart data={trendData} loading={loading} />
+            <MaleVsFemaleChart data={timeseriesData} loading={loading} />
+            <RegionalDisparityChart data={regionalData} loading={loading} />
+            <IndicatorsTable data={indicatorsData} loading={loading} />
           </div>
           <div className="w-96 space-y-6 sticky top-6 h-fit">
             <AIInsights />

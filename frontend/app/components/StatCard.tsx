@@ -1,6 +1,27 @@
 import { Target, Users, UserCheck, BarChart3 } from "lucide-react";
+import type { KPIData } from "~/services";
 
-export function StatsCards() {
+interface StatsCardsProps {
+  data: KPIData | null;
+  loading?: boolean;
+}
+
+export function StatsCards({ data, loading }: StatsCardsProps) {
+  if (loading || !data) {
+    return (
+      <div className="grid grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white border rounded-xl p-6 animate-pulse">
+            <div className="h-12 w-12 bg-gray-200 rounded-full mb-4" />
+            <div className="h-3 w-24 bg-gray-200 rounded mb-2" />
+            <div className="h-8 w-16 bg-gray-200 rounded mb-1" />
+            <div className="h-3 w-32 bg-gray-200 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-4 gap-6">
       <div className="bg-white border rounded-xl p-6">
@@ -8,21 +29,10 @@ export function StatsCards() {
           <div className="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
             <Target className="h-6 w-6 text-indigo-600" />
           </div>
-          <div className="text-xs font-medium text-green-600 flex items-center gap-1">
-            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-            54.2% since 2018
-          </div>
         </div>
         <div className="text-xs font-medium text-gray-500 mb-1">AVG GENDER GAP</div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">4.8%</div>
-        <div className="text-xs text-gray-500">Current disparity in selection</div>
+        <div className="text-3xl font-bold text-gray-900 mb-1">{data.avg_gender_gap}%</div>
+        <div className="text-xs text-gray-500">{data.indicator}</div>
       </div>
 
       <div className="bg-white border rounded-xl p-6">
@@ -32,8 +42,8 @@ export function StatsCards() {
           </div>
         </div>
         <div className="text-xs font-medium text-gray-500 mb-1">FEMALE AVG</div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">52.7%</div>
-        <div className="text-xs text-gray-500">Employment Rate (%)</div>
+        <div className="text-3xl font-bold text-gray-900 mb-1">{data.female_avg}%</div>
+        <div className="text-xs text-gray-500">{data.indicator}</div>
       </div>
 
       <div className="bg-white border rounded-xl p-6">
@@ -43,8 +53,8 @@ export function StatsCards() {
           </div>
         </div>
         <div className="text-xs font-medium text-gray-500 mb-1">MALE AVG</div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">57.5%</div>
-        <div className="text-xs text-gray-500">Employment Rate (%)</div>
+        <div className="text-3xl font-bold text-gray-900 mb-1">{data.male_avg}%</div>
+        <div className="text-xs text-gray-500">{data.indicator}</div>
       </div>
 
       <div className="bg-white border rounded-xl p-6">
@@ -54,8 +64,8 @@ export function StatsCards() {
           </div>
         </div>
         <div className="text-xs font-medium text-gray-500 mb-1">REGIONS TRACKED</div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">5</div>
-        <div className="text-xs text-gray-500">6 indicators monitored</div>
+        <div className="text-3xl font-bold text-gray-900 mb-1">{data.regions_tracked}</div>
+        <div className="text-xs text-gray-500">Provinces monitored</div>
       </div>
     </div>
   );
