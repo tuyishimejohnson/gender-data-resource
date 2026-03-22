@@ -3,22 +3,14 @@ import { Header } from "~/components/Header";
 import { DashboardFilters } from "~/components/DashboardFilter";
 import { StatsCards } from "~/components/StatCard";
 import { CoreMetrics } from "~/components/CoreMetrics";
-import { GenderGapChart } from "~/components/GenderGraph";
-import { MaleVsFemaleChart } from "~/components/MalevsFemale";
-import { RegionalDisparityChart } from "~/components/RegionalDispacity";
 import { IndicatorsTable } from "~/components/Indicator";
 import { IncomeInequality } from "~/components/IncomeInequality";
 import { SectorSegregation } from "~/components/SectorSegregation";
 import { GeographyInequality } from "~/components/GeographyInequality";
-import { AIInsights } from "~/components/AllInsight";
-import { AskIntelligence } from "~/components/AskIntelligent";
 import { Crown } from "lucide-react";
 import { dashboardApi } from "~/services";
 import type {
   KPIData,
-  TrendData,
-  TimeseriesData,
-  RegionalData,
   IndicatorsData,
   CoreMetricsData,
   AverageIncomeData,
@@ -30,13 +22,11 @@ import type {
   ProvinceEmploymentData,
   UrbanRuralData,
 } from "~/services";
+import { AskIntelligence } from "~/components/AskIntelligent";
 
 export default function App() {
   const [selectedYear, setSelectedYear] = useState(2023);
   const [kpiData, setKpiData] = useState<KPIData | null>(null);
-  const [trendData, setTrendData] = useState<TrendData | null>(null);
-  const [timeseriesData, setTimeseriesData] = useState<TimeseriesData | null>(null);
-  const [regionalData, setRegionalData] = useState<RegionalData | null>(null);
   const [indicatorsData, setIndicatorsData] = useState<IndicatorsData | null>(null);
   const [coreMetricsData, setCoreMetricsData] = useState<CoreMetricsData | null>(null);
   const [averageIncomeData, setAverageIncomeData] = useState<AverageIncomeData | null>(null);
@@ -90,9 +80,6 @@ export default function App() {
         ]);
 
         setKpiData(kpis);
-        setTrendData(trend);
-        setTimeseriesData(timeseries);
-        setRegionalData(regional);
         setIndicatorsData(indicators);
         setCoreMetricsData(coreMetrics);
         setAverageIncomeData(avgIncome);
@@ -129,9 +116,7 @@ export default function App() {
         <div className="mb-6">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                ParityMetrics Dashboard
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">ParityMetrics Dashboard</h1>
               <p className="text-gray-500">
                 Rwanda · Real-time gender equality analytics powered by AI
               </p>
@@ -182,7 +167,6 @@ export default function App() {
           </div>
           <div className="w-96 space-y-6 sticky top-6 h-fit">
             <AskIntelligence />
-            <AIInsights />
           </div>
         </div>
       </main>
