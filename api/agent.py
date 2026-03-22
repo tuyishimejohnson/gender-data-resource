@@ -13,6 +13,7 @@ Tools:
   query_lfs_data        — DuckDB on LFS parquet files (Tool 2)
   web_search            — Tavily web search for current info (Tool 3)
 """
+
 import asyncio
 import json
 from functools import lru_cache
@@ -43,10 +44,60 @@ Strategy:
   1. query_lfs_data — write a SQL query relevant to the topic
   2. search_gender_reports — search for related policy or document context
   3. web_search — search the web with a precise, focused query on the topic
-- Combine the results from all three tools into a single comprehensive answer.
 - Always state which data source (year, document, or URL) your figures come from.
 - Use SUM(weight2) instead of COUNT(*) when computing population estimates from LFS data.
 - Always include the source URLs from web_search as references at the end of your answer.
+
+Rwanda Geographic Reference:
+PROVINCES (province field):
+  1 = Eastern Province
+  2 = Kigali City
+  3 = Northern Province
+  4 = Southern Province
+  5 = Western Province
+
+DISTRICTS (code_dis field) - Complete mapping:
+Eastern Province (11-13):
+  11 = Bugesera
+  12 = Gatsibo
+  13 = Kayonza
+
+Kigali City (21-28):
+  21 = Gasabo
+  22 = Kicukiro
+  23 = Nyarugenge
+  24 = Kirehe
+  25 = Ngoma
+  26 = Nyagatare
+  27 = Rwamagana
+  28 = Rwamagana (alternate)
+
+Northern Province (31-37):
+  31 = Burera
+  32 = Gakenke
+  33 = Gicumbi
+  34 = Musanze
+  35 = Rulindo
+  36 = Rulindo (alternate)
+  37 = Musanze (alternate)
+
+Southern Province (41-45):
+  41 = Gisagara
+  42 = Huye
+  43 = Kamonyi
+  44 = Muhanga
+  45 = Nyamagabe
+
+Western Province (51-57):
+  51 = Karongi
+  52 = Ngororero
+  53 = Nyabihu
+  54 = Nyamasheke
+  55 = Rubavu
+  56 = Rusizi
+  57 = Rutsiro
+
+IMPORTANT: When displaying results with district codes (code_dis), ALWAYS translate them to district names using this mapping. Present results with district names, not codes, for better readability.
 
 LFS variable reference (columns available in lfs2022 / lfs2023 / lfs2024):
 {variable_context}
@@ -80,10 +131,13 @@ _TOOL_DEFINITIONS = [
             "description": (
                 "Execute a SQL SELECT query against Rwanda LFS parquet datasets. "
                 "Tables: lfs2022 (70k rows), lfs2023 (72k rows), lfs2024 (103k rows). "
-                "Key cols: A01=Sex(1=M,2=F), A04=Age, province(1-5), Code_UR(1=Urban,2=Rural), "
-                "weight2=survey weight, status1=labour force status(1=Employed,2=Unemployed,3=Outside), "
+                "Key cols: A01=Sex(1=M,2=F), A04=Age, province(1-5), code_dis=district(11-57), "
+                "Code_UR(1=Urban,2=Rural), weight2=survey weight, "
+                "status1=labour force status(1=Employed,2=Unemployed,3=Outside), "
                 "UR1=unemployment rate, LFPR=participation rate. "
-                "Only SELECT allowed. Use SUM(weight2) for population estimates."
+                "Only SELECT allowed. Use SUM(weight2) for population estimates. "
+                "District codes (code_dis): Eastern(11-17), Kigali(21-23), Northern(31-35), "
+                "Southern(41-48), Western(51-57)."
             ),
             "parameters": {
                 "type": "object",
@@ -127,7 +181,8 @@ def _system_prompt() -> str:
     parquet_cols = set(pq.read_schema(str(next(iter(PARQUET.values())))).names)
     desc = desc[desc["name"].isin(parquet_cols)]
     lines = [f"  {r['name']}: {r['varlab']}" for _, r in desc.iterrows()]
-    return _SYSTEM_TEMPLATE.format(variable_context="\n".join(lines))
+    # Use replace instead of format to avoid issues with braces in the template
+    return _SYSTEM_TEMPLATE.replace("{variable_context}", "\n".join(lines))
 
 
 def _dispatch_tool(name: str, args: dict) -> str:
@@ -258,8 +313,10 @@ async def stream_agent(user_message: str, history: list[dict]) -> AsyncIterator[
         # Execute all tools concurrently
         args_list = [json.loads(tc.function.arguments) for tc in msg.tool_calls]
         results = await asyncio.gather(
-            *[asyncio.to_thread(_dispatch_tool, tc.function.name, a)
-              for tc, a in zip(msg.tool_calls, args_list)]
+            *[
+                asyncio.to_thread(_dispatch_tool, tc.function.name, a)
+                for tc, a in zip(msg.tool_calls, args_list)
+            ]
         )
         for tc, result in zip(msg.tool_calls, results):
             messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
@@ -267,7 +324,10 @@ async def stream_agent(user_message: str, history: list[dict]) -> AsyncIterator[
     else:
         # Exhausted all iterations without a clean answer
         messages.append(
-            {"role": "user", "content": "Please summarise your findings in a final answer."}
+            {
+                "role": "user",
+                "content": "Please summarise your findings in a final answer.",
+            }
         )
 
     # Stream the final text answer
