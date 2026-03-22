@@ -309,7 +309,7 @@ cp api/.env.example api/.env
 # TAVILY_API_KEY=your_key_here (optional)
 
 # Start backend server
-uvicorn api.main:app --reload
+python3 -m uvicorn api.main:app --reload
 ```
 
 Backend will be available at: **http://localhost:8000**
@@ -322,7 +322,7 @@ Open a new terminal:
 cd frontend
 
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
 
 # Start development server
 npm run dev
