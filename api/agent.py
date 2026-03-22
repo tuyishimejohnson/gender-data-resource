@@ -13,12 +13,14 @@ Tools:
   query_lfs_data        — DuckDB on LFS parquet files (Tool 2)
   web_search            — Tavily web search for current info (Tool 3)
 """
+import asyncio
 import json
 from functools import lru_cache
+from typing import AsyncIterator
 
 import pandas as pd
 import pyarrow.parquet as pq
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 
 from api.config import CHAT_MODEL, OPENAI_API_KEY, PARQUET, VARIABLES_CSV
 from api.tools.data import _run_query
@@ -26,9 +28,10 @@ from api.tools.rag import _run_search
 from api.tools.search import _run_web_search
 
 _client = OpenAI(api_key=OPENAI_API_KEY)
+_async_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 _SYSTEM_TEMPLATE = """\
-You are a gender data analyst specialising in Rwanda.
+You are a ParityMetrics AI analyst specializing in gender equality data for Rwanda.
 
 You have access to three tools:
 1. search_gender_reports — search official reports and policy documents
@@ -194,3 +197,88 @@ def run_agent(user_message: str, history: list[dict]) -> str:
         temperature=0.2,
     )
     return final.choices[0].message.content or ""
+
+
+_TOOL_STATUS: dict[str, str] = {
+    "search_gender_reports": "Searching gender reports...",
+    "query_lfs_data": "Querying LFS dataset...",
+    "web_search": "Searching the web...",
+}
+
+
+async def stream_agent(user_message: str, history: list[dict]) -> AsyncIterator[str]:
+    """
+    Async generator that streams the agent response chunk by chunk.
+
+    Yields two kinds of strings:
+    - "STATUS:<message>"  — progress update during tool-calling phase
+    - anything else       — a text chunk to append to the assistant bubble
+
+    The bug in the previous version: when the model answered after tool calls
+    (the normal 2-step flow), we yielded msg.content all at once and returned,
+    never reaching the streaming code.  Fix: always stream the final answer.
+    """
+    messages = [
+        {"role": "system", "content": _system_prompt()},
+        *history,
+        {"role": "user", "content": user_message},
+    ]
+
+    did_tool_calls = False
+
+    # Tool-calling loop — run until the model stops requesting tools
+    for _ in range(6):
+        response = await _async_client.chat.completions.create(
+            model=CHAT_MODEL,
+            messages=messages,
+            tools=_TOOL_DEFINITIONS,
+            tool_choice="auto",
+            temperature=0.2,
+        )
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            if not did_tool_calls:
+                # Direct answer with no tools needed — yield at once
+                yield msg.content or ""
+                return
+            # After tool calls the model returned an answer without streaming.
+            # Discard it and fall through to the streaming block below so the
+            # final answer is always streamed rather than sent as one big chunk.
+            break
+
+        did_tool_calls = True
+        messages.append(msg)
+
+        # Emit a status event for every tool being called
+        for tc in msg.tool_calls:
+            label = _TOOL_STATUS.get(tc.function.name, f"Using {tc.function.name}...")
+            yield f"STATUS:{label}"
+
+        # Execute all tools concurrently
+        args_list = [json.loads(tc.function.arguments) for tc in msg.tool_calls]
+        results = await asyncio.gather(
+            *[asyncio.to_thread(_dispatch_tool, tc.function.name, a)
+              for tc, a in zip(msg.tool_calls, args_list)]
+        )
+        for tc, result in zip(msg.tool_calls, results):
+            messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
+
+    else:
+        # Exhausted all iterations without a clean answer
+        messages.append(
+            {"role": "user", "content": "Please summarise your findings in a final answer."}
+        )
+
+    # Stream the final text answer
+    yield "STATUS:Generating response..."
+    stream = await _async_client.chat.completions.create(
+        model=CHAT_MODEL,
+        messages=messages,
+        temperature=0.2,
+        stream=True,
+    )
+    async for chunk in stream:
+        delta = chunk.choices[0].delta
+        if delta.content:
+            yield delta.content
