@@ -36,8 +36,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Gender Data AI API",
-    description="AI-powered Q&A over Rwanda gender reports and LFS microdata.",
+    title="ParityMetrics API",
+    description="AI-powered gender equality analytics and insights platform for Rwanda.",
     version="1.0.0",
     lifespan=lifespan,
 )

@@ -310,7 +310,7 @@ export function AskIntelligence() {
         {messages.length === 0 && !loading && (
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-700 leading-relaxed">
-              Hello! I&apos;m your Gender Data Intelligence assistant. I can help you analyze
+              Hello! I&apos;m your ParityMetrics AI assistant. I can help you analyze
               Rwanda&apos;s gender statistics, identify trends, and uncover regional disparities.
               What would you like to explore today?
             </p>

@@ -15,7 +15,7 @@ export function Header() {
               </div>
             </div>
             <div>
-              <div className="font-bold text-gray-900">EquiStat</div>
+              <div className="font-bold text-gray-900">ParityMetrics</div>
               <div className="text-[10px] text-gray-500 leading-none">AI PLATFORM</div>
             </div>
           </div>

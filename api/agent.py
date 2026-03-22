@@ -31,7 +31,7 @@ _client = OpenAI(api_key=OPENAI_API_KEY)
 _async_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 _SYSTEM_TEMPLATE = """\
-You are a gender data analyst specialising in Rwanda.
+You are a ParityMetrics AI analyst specializing in gender equality data for Rwanda.
 
 You have access to three tools:
 1. search_gender_reports — search official reports and policy documents

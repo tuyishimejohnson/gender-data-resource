@@ -130,10 +130,10 @@ export default function App() {
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Gender Intelligence Dashboard
+                ParityMetrics Dashboard
               </h1>
               <p className="text-gray-500">
-                Rwanda · Real-time gender equity analytics powered by AI
+                Rwanda · Real-time gender equality analytics powered by AI
               </p>
             </div>
             <div className="text-right">
